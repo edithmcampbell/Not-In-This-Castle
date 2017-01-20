@@ -141,13 +141,13 @@ Guy.prototype.draw = function () {
 }
 
 
-//AM.queueDownload("./img/backgroundCastle.jpg");
-AM.queueDownload("./img/Princess.png");
-AM.queueDownload("./img/RobotUnicorn.png");
-AM.queueDownload("./img/guy.jpg");
-AM.queueDownload("./img/mushroomdude.png");
-AM.queueDownload("./img/runningcat.png");
-AM.queueDownload("./img/background.jpg");
+//AM.queueDownload("./backgroundCastle.jpg");
+AM.queueDownload("./Princess.png");
+AM.queueDownload("./RobotUnicorn.png");
+AM.queueDownload("./guy.jpg");
+AM.queueDownload("./mushroomdude.png");
+AM.queueDownload("./runningcat.png");
+AM.queueDownload("./background.jpg");
 
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
