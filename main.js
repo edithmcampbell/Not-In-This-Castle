@@ -157,11 +157,11 @@ AM.downloadAll(function () {
     gameEngine.init(ctx);
     gameEngine.start();
 
-    gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/background.jpg")));
-    gameEngine.addEntity(new MushroomDude(gameEngine, AM.getAsset("./img/mushroomdude.png")));
-    gameEngine.addEntity(new Princess(gameEngine, AM.getAsset("./img/Princess.png")));
-    gameEngine.addEntity(new Cheetah(gameEngine, AM.getAsset("./img/runningcat.png")));
-    gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./img/guy.jpg")));
+    gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./background.jpg")));
+    gameEngine.addEntity(new MushroomDude(gameEngine, AM.getAsset("./mushroomdude.png")));
+    gameEngine.addEntity(new Princess(gameEngine, AM.getAsset("./Princess.png")));
+    gameEngine.addEntity(new Cheetah(gameEngine, AM.getAsset("./runningcat.png")));
+    gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./guy.jpg")));
 
     console.log("All Done!");
 });
