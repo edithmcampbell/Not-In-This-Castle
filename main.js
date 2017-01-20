@@ -57,6 +57,25 @@ Background.prototype.draw = function () {
 Background.prototype.update = function () {
 };
 
+function Princess(game, spritesheet) {
+    this.animation = new Animation(spritesheet, 199, 300, 10, 0.2, 10, true, 1);
+    this.x = 1000;
+    this.y = 0;
+    this.speed = 100;
+    this.game = game;
+    this.ctx = game.ctx;
+}
+
+Princess.prototype.draw = function () {
+    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+}
+
+Princess.prototype.update = function () {
+    this.x -= this.game.clockTick * this.speed;
+    if (this.x < 0) this.x = 1000;
+}
+
+
 function MushroomDude(game, spritesheet) {
     this.animation = new Animation(spritesheet, 189, 230, 5, 0.10, 14, true, 1);
     this.x = 0;
@@ -122,6 +141,8 @@ Guy.prototype.draw = function () {
 }
 
 
+//AM.queueDownload("./img/backgroundCastle.jpg");
+AM.queueDownload("./img/Princess.png");
 AM.queueDownload("./img/RobotUnicorn.png");
 AM.queueDownload("./img/guy.jpg");
 AM.queueDownload("./img/mushroomdude.png");
@@ -138,6 +159,7 @@ AM.downloadAll(function () {
 
     gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/background.jpg")));
     gameEngine.addEntity(new MushroomDude(gameEngine, AM.getAsset("./img/mushroomdude.png")));
+    gameEngine.addEntity(new Princess(gameEngine, AM.getAsset("./img/Princess.png")));
     gameEngine.addEntity(new Cheetah(gameEngine, AM.getAsset("./img/runningcat.png")));
     gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./img/guy.jpg")));
 
