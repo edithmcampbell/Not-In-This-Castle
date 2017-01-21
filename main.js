@@ -139,7 +139,29 @@ Guy.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
     Entity.prototype.draw.call(this);
 }
+//new code
+function Fireball(game, spritesheet) {
+    this.animation = new Animation(spritesheet,1000, 1000, 4, .5, 8, true, 0.10);
+	this.x = 0;
+    this.y = 0;
+    this.speed = 100;
+    this.ctx = game.ctx;
+    Entity.call(this, game, 100, 350);
+}
 
+Fireball.prototype = new Entity();
+Fireball.prototype.constructor = Fireball;
+
+Fireball.prototype.update = function () {
+    this.x += this.game.clockTick * this.speed;
+    if (this.x > 800) this.x = 0; 
+    Entity.prototype.update.call(this);
+}
+
+Fireball.prototype.draw = function () {
+    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+    Entity.prototype.draw.call(this);
+}
 
 //AM.queueDownload("./backgroundCastle.jpg");
 AM.queueDownload("./Princess.png");
@@ -148,6 +170,7 @@ AM.queueDownload("./guy.jpg");
 AM.queueDownload("./mushroomdude.png");
 AM.queueDownload("./runningcat.png");
 AM.queueDownload("./background.jpg");
+AM.queueDownload("./Fireball.png");
 
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
@@ -162,6 +185,7 @@ AM.downloadAll(function () {
     gameEngine.addEntity(new Princess(gameEngine, AM.getAsset("./Princess.png")));
     gameEngine.addEntity(new Cheetah(gameEngine, AM.getAsset("./runningcat.png")));
     gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./guy.jpg")));
+	gameEngine.addEntity(new Fireball(gameEngine, AM.getAsset("./Fireball.png")));
 
     console.log("All Done!");
 });
