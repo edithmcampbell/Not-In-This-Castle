@@ -1,6 +1,4 @@
 var AM = new AssetManager();
-var dir = true;
-
 
 function Animation(spriteSheet, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
     this.spriteSheet = spriteSheet;
@@ -14,6 +12,20 @@ function Animation(spriteSheet, frameWidth, frameHeight, sheetWidth, frameDurati
     this.loop = loop;
     this.scale = scale;
 }
+
+Animation.prototype.drawFrame2 = function (tick, ctx, xsrc, ysrc, xdest, ydest) {
+    this.elapsedTime += tick;
+    if (this.isDone()) {
+        if (this.loop) this.elapsedTime = 0;
+    }
+    var frame = this.currentFrame();
+    ctx.drawImage(this.spriteSheet, 
+		xsrc, ysrc, 
+		this.frameWidth, this.frameHeight, 
+		xdest, ydest, 
+		this.frameWidth * this.scale, this.frameHeight * this.scale);
+}
+
 
 Animation.prototype.drawFrame = function (tick, ctx, x, y) {
     this.elapsedTime += tick;
@@ -60,133 +72,48 @@ Background.prototype.update = function () {
 };
 
 function Princess(game, spritesheet) {
-    this.animation = new Animation(spritesheet, 199, 300, 10, 0.2, 10, true, 1);
-    this.x = 700;
+    this.animation = new Animation(spritesheet, 199, 300, 10, 0.2, 10, true, .5);
+    this.x = 1000;
     this.y = 0;
     this.speed = 100;
     this.game = game;
     this.ctx = game.ctx;
+
 }
 
 Princess.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
 }
 
-
 Princess.prototype.update = function () {
-    if (this.x <= 0) {
-		dir = false;
-
-	}
-	if (this.x >= 700 ) {
-	    dir = true;
-	   
-	}
-	if(dir){
-	    this.x -= this.game.clockTick * this.speed;
-		
-	}
-	if(!dir){
-	    this.x += this.game.clockTick * this.speed;
-		
-	}
-	
-  
+    this.x -= this.game.clockTick * this.speed;
+    if (this.x < 0) this.x = 900;
+    
 }
 
-function MushroomDude(game, spritesheet) {
-    this.animation = new Animation(spritesheet, 189, 230, 5, 0.10, 14, true, 1);
-    this.x = 0;
-    this.y = 0;
+function Goomba(game, spritesheet) {
+    this.animation = new Animation(spritesheet, 17.5, 25, 6, 0.2, 6, true, 3);
+    this.x = 800;
+    this.y = 200;
     this.speed = 100;
     this.game = game;
     this.ctx = game.ctx;
+
 }
 
-MushroomDude.prototype.draw = function () {
-    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+Goomba.prototype.draw = function () {
+    this.animation.drawFrame2(this.game.clockTick, 0, 0, this.ctx, this.x, this.y);
 }
 
-MushroomDude.prototype.update = function () {
-    if (this.animation.elapsedTime < this.animation.totalTime * 8 / 14)
-        this.x += this.game.clockTick * this.speed;
-    if (this.x > 800) this.x = -230;
+Goomba.prototype.update = function () {
+    this.x -= this.game.clockTick * this.speed;
+    if (this.x < 0) this.x = 900;
 }
 
-
-// inheritance 
-function Cheetah(game, spritesheet) {
-    this.animation = new Animation(spritesheet, 512, 256, 2, 0.05, 8, true, 0.5);
-    this.speed = 350;
-    this.ctx = game.ctx;
-    Entity.call(this, game, 0, 250);
-}
-
-Cheetah.prototype = new Entity();
-Cheetah.prototype.constructor = Cheetah;
-
-Cheetah.prototype.update = function () {
-    this.x += this.game.clockTick * this.speed;
-    if (this.x > 800) this.x = -230;
-    Entity.prototype.update.call(this);
-}
-
-Cheetah.prototype.draw = function () {
-    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
-}
-
-// inheritance 
-function Guy(game, spritesheet) {
-    this.animation = new Animation(spritesheet, 154, 215, 4, 0.15, 8, true, 0.5);
-    this.speed = 100;
-    this.ctx = game.ctx;
-    Entity.call(this, game, 0, 450);
-}
-
-Guy.prototype = new Entity();
-Guy.prototype.constructor = Guy;
-
-Guy.prototype.update = function () {
-    this.x += this.game.clockTick * this.speed;
-    if (this.x > 800) this.x = -230;
-    Entity.prototype.update.call(this);
-}
-
-Guy.prototype.draw = function () {
-    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
-}
-//new code
-function Fireball(game, spritesheet) {
-    this.animation = new Animation(spritesheet,1000, 1000, 4, .5, 8, true, 0.10);
-	this.speed = 100;
-    this.ctx = game.ctx;
-    Entity.call(this, game, 100, 350);
-}
-
-Fireball.prototype = new Entity();
-Fireball.prototype.constructor = Fireball;
-
-Fireball.prototype.update = function () {
-    this.x += this.game.clockTick * this.speed;
-    if (this.x > 800) this.x = 0; 
-    Entity.prototype.update.call(this);
-}
-
-Fireball.prototype.draw = function () {
-    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
-}
-
-//AM.queueDownload("./backgroundCastle.jpg");
+AM.queueDownload("./enemies-2.png");
+AM.queueDownload("./Goombas.png");
 AM.queueDownload("./Princess.png");
-AM.queueDownload("./RobotUnicorn.png");
-AM.queueDownload("./guy.jpg");
-AM.queueDownload("./mushroomdude.png");
-AM.queueDownload("./runningcat.png");
 AM.queueDownload("./background.jpg");
-AM.queueDownload("./Fireball.png");
 
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
@@ -197,12 +124,8 @@ AM.downloadAll(function () {
     gameEngine.start();
 
     gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./background.jpg")));
-    gameEngine.addEntity(new MushroomDude(gameEngine, AM.getAsset("./mushroomdude.png")));
     gameEngine.addEntity(new Princess(gameEngine, AM.getAsset("./Princess.png")));
-	gameEngine.addEntity(new Cheetah(gameEngine, AM.getAsset("./runningcat.png")));
-    gameEngine.addEntity(new Guy(gameEngine, AM.getAsset("./guy.jpg")));
-	gameEngine.addEntity(new Fireball(gameEngine, AM.getAsset("./Fireball.png")));
+    gameEngine.addEntity(new Goomba(gameEngine, AM.getAsset("./Goombas.png")));
 
     console.log("All Done!");
 });
-
