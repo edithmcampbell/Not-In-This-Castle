@@ -21,6 +21,7 @@ GameEngine.prototype.init = function (ctx) {
     this.surfaceWidth = this.ctx.canvas.width;
     this.surfaceHeight = this.ctx.canvas.height;
     this.timer = new Timer();
+    this.startInput();
     console.log('game initialized');
 }
 
@@ -31,6 +32,50 @@ GameEngine.prototype.start = function () {
         that.loop();
         requestAnimFrame(gameLoop, that.ctx.canvas);
     })();
+}
+
+GameEngine.prototype.startInput = function () {
+    console.log('Starting input');
+    var that = this;
+
+    // event listeners are added here
+
+    this.ctx.canvas.addEventListener("keydown", function (e) {
+        console.log(e)
+	if (e.code === "KeyW") {
+            that.w = true;
+        }
+        else if (e.code === "KeyS") {
+            that.s = true;
+        }
+        else if (e.code === "KeyA") {
+            that.a = true;
+            that.walking = true;
+            that.d = false;
+        } else if (e.code === "KeyD") {
+            that.d = true;
+            that.walking = true;
+            that.a = false;
+        } else if (e.code === "Space") {
+            that.throw = true;
+        }
+		 else if (e.code === "KeyF") {
+            that.movingFireball = true;
+        }
+        console.log("Key down event - Char " + e.code + " Code " + e.keyCode);
+    }, false);
+
+
+    this.ctx.canvas.addEventListener("keyup", function (e) {
+        console.log(e)
+	if (e.code === "KeyW") that.w = false;
+        else if (e.code === "KeyS") that.s = false;
+        else if (e.code === "KeyA") that.walking = false;
+	else if (e.code === "KeyD") that.walking = false;
+        else if (e.code === "Space") that.throw = false;
+		else if (e.code === "KeyF") that.movingFireball = false;
+        console.log("Key up event - Char " + e.code + " Code " + e.keyCode);
+    }, false);
 }
 
 GameEngine.prototype.addEntity = function (entity) {
