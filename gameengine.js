@@ -59,6 +59,9 @@ GameEngine.prototype.startInput = function () {
         } else if (e.code === "Space") {
             that.throw = true;
         }
+		 else if (e.code === "KeyF") {
+            that.movingFireball = true;
+        }
         console.log("Key down event - Char " + e.code + " Code " + e.keyCode);
     }, false);
 
@@ -70,6 +73,7 @@ GameEngine.prototype.startInput = function () {
         else if (e.code === "KeyA") that.walking = false;
 	else if (e.code === "KeyD") that.walking = false;
         else if (e.code === "Space") that.throw = false;
+		else if (e.code === "KeyF") that.movingFireball = false;
         console.log("Key up event - Char " + e.code + " Code " + e.keyCode);
     }, false);
 }

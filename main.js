@@ -197,25 +197,32 @@ Goomba.prototype.update = function () {
 
 //new code
 function Fireball(game, spritesheets) {
-    this.animation = new Animation(spritesheets, 1000, 1000, 4, .5, 8, true, 0.10);
-	this.speed = 100;
+    this.animation = new Animation(spritesheets, 19, 22, 3, .2, 8, true, 2);
+    this.x = 0;
+    this.y = 300;
+    this.speed = 170;
+    this.game = game;
     this.ctx = game.ctx;
-    Entity.call(this, game, 100, 350);
-}
-
-Fireball.prototype = new Entity();
-Fireball.prototype.constructor = Fireball;
-
-Fireball.prototype.update = function () {
-    this.x += this.game.clockTick * this.speed;
-    if (this.x > 800) this.x = 0; 
-    Entity.prototype.update.call(this);
+    //this.dir = true;
 }
 
 Fireball.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
 }
+
+Fireball.prototype.update = function () {
+	if(this.game.movingFireball){
+		this.x += this.game.clockTick * this.speed;
+		if(this.x > 800){
+			this.x = 0;
+		}
+	}
+	else{
+		this.x = 0;
+        this.y = 300;
+	}
+}
+
 
 
 AM.queueDownload("./PeachWalkLeft.png");
@@ -250,7 +257,7 @@ AM.downloadAll(function () {
     gameEngine.addEntity(new Goomba(gameEngine, goombaSprites));
     gameEngine.addEntity(new Princess(gameEngine, princessSprites));
 
-   // gameEngine.addEntity(new Fireball(gameEngine, fireballSprites));
+   gameEngine.addEntity(new Fireball(gameEngine, fireballSprites));
 
     console.log("All Done!");
 });
