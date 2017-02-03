@@ -124,10 +124,12 @@ Timer.prototype.tick = function () {
     return gameDelta;
 }
 
-function Entity(game, x, y) {
+function Entity(game, x, y, w, h) {
     this.game = game;
     this.x = x;
     this.y = y;
+    this.width = w;
+    this.height = h;
     this.removeFromWorld = false;
 }
 
