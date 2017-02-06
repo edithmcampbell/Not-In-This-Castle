@@ -57,32 +57,32 @@ Animation.prototype.currentFrame = function () {
 Animation.prototype.isDone = function () {
     return (this.elapsedTime >= this.totalTime);
 }
+Entity.prototype.collision = function(other){
+	return (this.x < other.x + other.width
+ 	&& this.x + this.width > other.x
+ 	&& this.y < other.y + other.height
+ 	&& this.height + this.y > other.y);
+ }
 
-Entity.prototype.collision = function(other) {
-    return (this.x < other.x + other.width
-	&& this.x + this.width > other.x
-	&& this.y < other.y + other.height
-	&& this.height + this.y > other.y);
-}
 
-
+// no inheritance
 function Background(game, spritesheets) {
     this.spritesheet = spritesheets[0];
     this.x = 0;
     this.y = 0;
-    this.width = 800;
-    this.height = 800;
+	this.width = 800;
+	this.height = 800;
     this.game = game;
     this.ctx = game.ctx;
     Entity.call(this, game, 0, 0, 800, 800);
-};
-
-Background.prototype = new Entity();
-Background.prototype.constructor = Background;
+}
+ 
+ Background.prototype = new Entity();
+ Background.prototype.constructor = Background;
 
 Background.prototype.draw = function () {
     this.ctx.drawImage(this.spritesheet, this.x, this.y);
-    Entity.prototype.draw.call(this);
+	Entity.prototype.draw.call(this);
 };
 
 Background.prototype.update = function () {
@@ -97,16 +97,18 @@ function Block(game, spriteshets) {
     Entity.call(this, game, 0, 0, 0, 0);
 };
 
+
 Block.prototype = new Entity();
 Block.prototype.constructor = Block;
 
 Block.prototype.draw = function () {
     this.ctx.drawImage(this.spritesheet, this.x, this.y);
-    Entity.prototype.draw.call(this);
+	Block.prototype = new Entity();
+    Block.prototype.constructor = Block;
 };
 
 Block.prototype.update = function () {
-    Entity.prototype.update.call(this);
+	 Entity.prototype.update.call(this);
 };
 
 
@@ -114,27 +116,35 @@ function Princess(game, spritesheets) {
     this.animation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, true, 1.25);
     this.x = 300;
     this.y = 565;
-    this.width = this.animation.frameWidth;
+	this.width = this.animation.frameWidth;
     this.height = this.animation.frameHeight;
     this.speed = 125;
     this.game = game;
     this.ctx = game.ctx;
     this.dir = true;
     this.walking = false;
-    this.jump = false;
-    Entity.call(this, game, 300, 565, this.width, this.height);
+    this.jumpAnimation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, false, 1.25);
+    this.jumping = false;
+	this.ground = 565;
+	Entity.call(this, game, 300, 565, this.width, this.height);
 }
-
 Princess.prototype = new Entity();
 Princess.prototype.constructor = Princess;
 
 Princess.prototype.draw = function () {
-    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+	
+   if (this.game.jumping) {
+        this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x + 17, this.y - 34);
+  
+    }else {
+        this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+    }
     Entity.prototype.draw.call(this);
 }
 
 
 Princess.prototype.update = function () {
+	
     if (this.game.d) {
         this.dir = true;
     }
@@ -142,16 +152,35 @@ Princess.prototype.update = function () {
         this.dir = false;
     }
     if (this.x <= 0) {
-	this.dir = true;
+	    this.dir = true;
     }
     if (this.x >= 750 ) {
-	this.dir = false;
+	    this.dir = false;
 	   
     }
 	
     if(this.dir) {		// facing right
         if (this.game.walking) {
-	    this.x += this.game.clockTick * this.speed;		// walking/moving to the right
+	        this.x += this.game.clockTick * this.speed;
+		}
+		// walking/moving to the right
+	    if (this.game.jumping) {
+        
+            var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
+            var totalHeight = 200;
+
+        if (jumpDistance > 0.5)
+            jumpDistance = 1 - jumpDistance;
+
+        //var height = jumpDistance * 2 * totalHeight;
+            var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+            this.y = this.ground - height;
+			if (this.y + this.height > this.ground){
+				this.jumping = false;
+				this.animation.elapsedTime = 0;
+			}
+			//this.jumping = true;
+        
         }
         if (this.game.s) {
             this.animation.change(this.animation.spritesheets[4], 67, 80, 3, 0.2, 3, true, 1.25); 	// crouch right
@@ -164,15 +193,30 @@ Princess.prototype.update = function () {
             this.animation.change(this.animation.spritesheets[2], 48, 80, 4, 0.2, 4, true, 1.25);	// walking right
         } else if (this.game.throw) {
             this.animation.change(this.animation.spritesheets[8], 80, 80, 3, 0.2, 3, true, 1.5);	// throwing right
-
+        } else if(this.game.jumping){
+			this.jumpAnimation.change(this.jumpAnimation.spritesheets[6],  56, 80, 7, 0.2, 7, true, 1.5);
         } else {
             this.animation.change(this.animation.spritesheets[0], 48, 80, 9, 0.2, 9, true, 1.25);	// standing right
-	}
+	    }
     } else {			// facing left
         if (this.game.walking) {
 	    this.x -= this.game.clockTick * this.speed;		// walking/moving to the left
         }
-        if (this.game.s) {
+		if (this.game.jumping) {
+        
+            var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
+            var totalHeight = 200;
+
+        if (jumpDistance > 0.5)
+            jumpDistance = 1 - jumpDistance;
+
+        //var height = jumpDistance * 2 * totalHeight;
+            var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+            this.y = this.ground - height;
+			
+        
+        }
+         if (this.game.s) {
             this.animation.change(this.animation.spritesheets[5], 67, 80, 3, 0.2, 3, true, 1.25);	// crouch left
         } else if (this.game.w) {
             this.animation.change(this.animation.spritesheets[7], 56, 80, 7, 0.2, 7, true, 1.5); 	// jump left
@@ -183,47 +227,50 @@ Princess.prototype.update = function () {
             this.animation.change(this.animation.spritesheets[3], 48, 80, 4, 0.2, 4, true, 1.25);	// walking left
         } else if (this.game.throw) {
             this.animation.change(this.animation.spritesheets[9], 80, 80, 3, 0.2, 3, true, 1.5);	// throwing left
-
+        }else if(this.game.jumping){
+			this.jumpAnimation.change(this.jumpAnimation.spritesheets[7], 56, 80, 7, 0.2, 7, true, 1.5);
         } else {
             this.animation.change(this.animation.spritesheets[1], 48, 80, 9, 0.2, 9, true, 1.25);	// standing left
         }
     } 
+	
     if (this.y < 565) {
-        this.y += 2;
+        this.y += 3; // After jump it drops.
     }
-    for (var i = 0; i < this.game.entities.length; i++) {
-        var ent = this.game.entities[i];
-        if (ent !== this && this.collision(ent) && (ent instanceof Goomba)) {
-            console.log("COLLISION!");
-        }
-    }
-    Entity.prototype.update.call(this);
-}
+	
+	for (var i = 0; i < this.game.entities.length; i++) {
+         var ent = this.game.entities[i];
+         if (ent !== this && this.collision(ent) && (ent instanceof Goomba)) {
+             console.log("COLLISION!");
+         }
+     }
+     Entity.prototype.update.call(this);
+ }
 
 
 function Goomba(game, spritesheets) {
     this.animation = new Animation(spritesheets, 60, 72, 5, .2, 5, true, 1);
     this.x = 500;
     this.y = 600;
-    this.width = this.animation.frameWidth;
+	this.width = this.animation.frameWidth;
     this.height = this.animation.frameHeight;
     this.speed = 100;
     this.game = game;
     this.ctx = game.ctx;
     this.dir = true;
-    Entity.call(this, game, 500, 600, this.width, this.height);
+	Entity.call(this, game, 500, 600, this.width, this.height);
+	
 }
-
 Goomba.prototype = new Entity();
 Goomba.prototype.constructor = Goomba;
 
 Goomba.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
+	Entity.prototype.draw.call(this);
+	
 }
 
 Goomba.prototype.update = function () {
-
     if (this.x <= 0) {
 	this.dir = true;
     }
@@ -235,34 +282,32 @@ Goomba.prototype.update = function () {
     } else {
         this.x -= this.game.clockTick * this.speed;
     }
-    Entity.prototype.update.call(this);
-
+	Entity.prototype.update.call(this);
+	
 }
 
 //new code
 function Fireball(game, spritesheets) {
     this.animation = new Animation(spritesheets, 19, 22, 3, .2, 8, true, 2);
-    this.x = 0;
+    this.x = 300;
     this.y = 300;
-    this.width = this.animation.frameWidth;
+	this.width = this.animation.frameWidth;
     this.height = this.animation.frameHeight;
     this.speed = 170;
     this.game = game;
     this.ctx = game.ctx;
     //this.dir = true;
-    Entity.call(this, game, 0, 300, this.width, this.height);
+	Entity.call(this, game, 0, 300, this.width, this.height);
 }
-
 Fireball.prototype = new Entity();
 Fireball.prototype.constructor = Fireball;
-
+  
 Fireball.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
+	Entity.prototype.draw.call(this);
 }
 
 Fireball.prototype.update = function () {
-
 	if(this.game.movingFireball){
 		this.x += this.game.clockTick * this.speed;
 		if(this.x > 800){
@@ -273,7 +318,7 @@ Fireball.prototype.update = function () {
 		this.x = 0;
         this.y = 300;
 	}
-
+	Entity.prototype.update.call(this);
 }
 
 

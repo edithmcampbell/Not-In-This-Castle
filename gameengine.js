@@ -62,6 +62,10 @@ GameEngine.prototype.startInput = function () {
 		 else if (e.code === "KeyF") {
             that.movingFireball = true;
         }
+		else if (e.code === "KeyJ") {
+            that.jumping = true;
+        }
+		
         console.log("Key down event - Char " + e.code + " Code " + e.keyCode);
     }, false);
 
@@ -74,6 +78,7 @@ GameEngine.prototype.startInput = function () {
 	else if (e.code === "KeyD") that.walking = false;
         else if (e.code === "Space") that.throw = false;
 		else if (e.code === "KeyF") that.movingFireball = false;
+		else if (e.code === "KeyJ") that.jumping = false;
         console.log("Key up event - Char " + e.code + " Code " + e.keyCode);
     }, false);
 }
@@ -124,12 +129,12 @@ Timer.prototype.tick = function () {
     return gameDelta;
 }
 
-function Entity(game, x, y, w, h) {
+function Entity(game, x, y,width, height) {
     this.game = game;
     this.x = x;
     this.y = y;
-    this.width = w;
-    this.height = h;
+	this.width = width;
+    this.height = height;
     this.removeFromWorld = false;
 }
 
