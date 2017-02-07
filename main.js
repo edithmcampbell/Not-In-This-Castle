@@ -1,6 +1,6 @@
 var AM = new AssetManager();
 var dir = true;
-
+var isCollision = false;
 
 function Animation(spritesheets, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
     this.spritesheets = spritesheets;
@@ -132,7 +132,6 @@ Princess.prototype = new Entity();
 Princess.prototype.constructor = Princess;
 
 Princess.prototype.draw = function () {
-	
    if (this.game.jumping) {
         this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x + 17, this.y - 34);
   
@@ -142,6 +141,9 @@ Princess.prototype.draw = function () {
     Entity.prototype.draw.call(this);
 }
 
+function newGoomba(){
+	isCollision = false;
+}
 
 Princess.prototype.update = function () {
 	
@@ -242,11 +244,16 @@ Princess.prototype.update = function () {
          var ent = this.game.entities[i];
          if (ent !== this && this.collision(ent) && (ent instanceof Goomba)) {
              console.log("COLLISION!");
+			 isCollision = true;
+			 
+			 setTimeout(newGoomba, 4000); // Make goomba alive after 3 secs.
+			 ent.x = 700;
+			 ent.y = 600;
+			 
          }
      }
      Entity.prototype.update.call(this);
  }
-
 
 function Goomba(game, spritesheets) {
     this.animation = new Animation(spritesheets, 60, 72, 5, .2, 5, true, 1);
@@ -265,25 +272,27 @@ Goomba.prototype = new Entity();
 Goomba.prototype.constructor = Goomba;
 
 Goomba.prototype.draw = function () {
-    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-	Entity.prototype.draw.call(this);
-	
+	if(isCollision === false){
+        this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+	    Entity.prototype.draw.call(this);
+	}
 }
 
 Goomba.prototype.update = function () {
-    if (this.x <= 0) {
-	this.dir = true;
+	if(isCollision === false){
+		if (this.x <= 0) {
+		this.dir = true;
+		}
+		if (this.x >= 750 ) {
+		this.dir = false;
+		}
+		if (this.dir) {
+			this.x += this.game.clockTick * this.speed;
+		} else {
+			this.x -= this.game.clockTick * this.speed;
+		}
+		Entity.prototype.update.call(this);
     }
-    if (this.x >= 750 ) {
-	this.dir = false;
-    }
-    if (this.dir) {
-        this.x += this.game.clockTick * this.speed;
-    } else {
-        this.x -= this.game.clockTick * this.speed;
-    }
-	Entity.prototype.update.call(this);
-	
 }
 
 //new code
