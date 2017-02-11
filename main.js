@@ -1,7 +1,7 @@
 var AM = new AssetManager();
 var dir = true;
 var isCollision = false;
-
+var isDead = false;
 function Animation(spritesheets, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
     this.spritesheets = spritesheets;
     this.spritesheet = spritesheets[0];
@@ -123,8 +123,8 @@ function Princess(game, spritesheets) {
     this.ctx = game.ctx;
     this.dir = true;
     this.walking = false;
-    this.jumpAnimation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, false, 1.25);
-    this.jumping = false;
+    this.jumpAnimation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, true, 1.25);
+    //this.jumping = false;
 	this.ground = 565;
 	Entity.call(this, game, 300, 565, this.width, this.height);
 }
@@ -132,127 +132,127 @@ Princess.prototype = new Entity();
 Princess.prototype.constructor = Princess;
 
 Princess.prototype.draw = function () {
-   if (this.game.jumping) {
-        this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x + 17, this.y - 34);
-  
-    }else {
-        this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    }
-    Entity.prototype.draw.call(this);
+   if(isDead === false){
+	   if (this.game.w ) { 
+			this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x + 17, this.y - 34);
+	  
+		}else {
+			this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+		}
+		Entity.prototype.draw.call(this);
+   }	
 }
 
-function newGoomba(){
-	isCollision = false;
-}
 
 Princess.prototype.update = function () {
-	
-    if (this.game.d) {
-        this.dir = true;
-    }
-    else if (this.game.a) {
-        this.dir = false;
-    }
-    if (this.x <= 0) {
-	    this.dir = true;
-    }
-    if (this.x >= 750 ) {
-	    this.dir = false;
-	   
-    }
-	
-    if(this.dir) {		// facing right
-        if (this.game.walking) {
-	        this.x += this.game.clockTick * this.speed;
+	if(isDead === false ){
+		if (this.game.d) {
+			this.dir = true;
 		}
-		// walking/moving to the right
-	    if (this.game.jumping) {
-        
-            var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
-            var totalHeight = 200;
-
-        if (jumpDistance > 0.5)
-            jumpDistance = 1 - jumpDistance;
-
-        //var height = jumpDistance * 2 * totalHeight;
-            var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
-            this.y = this.ground - height;
-			if (this.y + this.height > this.ground){
-				this.jumping = false;
-				this.animation.elapsedTime = 0;
+		else if (this.game.a) {
+			this.dir = false;
+		}
+		if (this.x <= 0) {
+			this.dir = true;
+		}
+		if (this.x >= 750 ) {
+			this.dir = false;
+		   
+		}
+		
+		if(this.dir) {		// facing right
+			if (this.game.walking) {
+				this.x += this.game.clockTick * this.speed;
 			}
-			//this.jumping = true;
-        
-        }
-        if (this.game.s) {
-            this.animation.change(this.animation.spritesheets[4], 67, 80, 3, 0.2, 3, true, 1.25); 	// crouch right
-        } else if (this.game.w) {
-            this.animation.change(this.animation.spritesheets[6], 56, 80, 7, 0.2, 7, true, 1.5); 	// jump right
-            if (this.animation.elapsedTime < this.animation.totalTime * (1/2)) {
-                this.y -= 5;
-            }
-        } else if (this.game.walking) {
-            this.animation.change(this.animation.spritesheets[2], 48, 80, 4, 0.2, 4, true, 1.25);	// walking right
-        } else if (this.game.throw) {
-            this.animation.change(this.animation.spritesheets[8], 80, 80, 3, 0.2, 3, true, 1.5);	// throwing right
-        } else if(this.game.jumping){
-			this.jumpAnimation.change(this.jumpAnimation.spritesheets[6],  56, 80, 7, 0.2, 7, true, 1.5);
-        } else {
-            this.animation.change(this.animation.spritesheets[0], 48, 80, 9, 0.2, 9, true, 1.25);	// standing right
-	    }
-    } else {			// facing left
-        if (this.game.walking) {
-	    this.x -= this.game.clockTick * this.speed;		// walking/moving to the left
-        }
-		if (this.game.jumping) {
-        
-            var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
-            var totalHeight = 200;
-
-        if (jumpDistance > 0.5)
-            jumpDistance = 1 - jumpDistance;
-
-        //var height = jumpDistance * 2 * totalHeight;
-            var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
-            this.y = this.ground - height;
+			// moving/jumping to the right
+			if (this.game.w) {
 			
-        
-        }
-         if (this.game.s) {
-            this.animation.change(this.animation.spritesheets[5], 67, 80, 3, 0.2, 3, true, 1.25);	// crouch left
-        } else if (this.game.w) {
-            this.animation.change(this.animation.spritesheets[7], 56, 80, 7, 0.2, 7, true, 1.5); 	// jump left
-            if (this.animation.elapsedTime < this.animation.totalTime * (1/2)) {
-                this.y -= 5;
-            }
-        } else if (this.game.walking) {
-            this.animation.change(this.animation.spritesheets[3], 48, 80, 4, 0.2, 4, true, 1.25);	// walking left
-        } else if (this.game.throw) {
-            this.animation.change(this.animation.spritesheets[9], 80, 80, 3, 0.2, 3, true, 1.5);	// throwing left
-        }else if(this.game.jumping){
-			this.jumpAnimation.change(this.jumpAnimation.spritesheets[7], 56, 80, 7, 0.2, 7, true, 1.5);
-        } else {
-            this.animation.change(this.animation.spritesheets[1], 48, 80, 9, 0.2, 9, true, 1.25);	// standing left
-        }
-    } 
-	
-    if (this.y < 565) {
-        this.y += 3; // After jump it drops.
-    }
-	
-	for (var i = 0; i < this.game.entities.length; i++) {
-         var ent = this.game.entities[i];
-         if (ent !== this && this.collision(ent) && (ent instanceof Goomba)) {
-             console.log("COLLISION!");
-			 isCollision = true;
-			 
-			 setTimeout(newGoomba, 4000); // Make goomba alive after 3 secs.
-			 ent.x = 700;
-			 ent.y = 600;
-			 
-         }
-     }
-     Entity.prototype.update.call(this);
+				var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
+				var totalHeight = 200;
+
+			if (jumpDistance > 0.5)
+				jumpDistance = 1 - jumpDistance;
+
+			//var height = jumpDistance * 2 * totalHeight;
+				var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+				this.y = this.ground - height;
+				if (this.y + this.height > this.ground){
+					//this.jumping = false;
+					this.animation.elapsedTime = 0;
+				}
+				//this.jumping = true;
+				this.jumpAnimation.change(this.jumpAnimation.spritesheets[6],  56, 80, 7, 0.2, 7, true, 1.5);
+			}
+			if (this.game.s) {
+				this.animation.change(this.animation.spritesheets[4], 67, 80, 3, 0.2, 3, true, 1.25); 	// crouch right
+			} else if (this.game.walking) {
+				this.animation.change(this.animation.spritesheets[2], 48, 80, 4, 0.2, 4, true, 1.25);	// walking right
+			} else if (this.game.throw) {
+				this.animation.change(this.animation.spritesheets[8], 80, 80, 3, 0.2, 3, true, 1.5);	// throwing right
+			}else {
+				this.animation.change(this.animation.spritesheets[0], 48, 80, 9, 0.2, 9, true, 1.25);	// standing right
+			}
+		} else {			// facing left
+			if (this.game.walking) {
+			this.x -= this.game.clockTick * this.speed;		// walking/moving to the left
+			}
+			if (this.game.w) { // jumping left
+			
+				var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
+				var totalHeight = 200;
+
+			if (jumpDistance > 0.5)
+				jumpDistance = 1 - jumpDistance;
+
+			//var height = jumpDistance * 2 * totalHeight;
+				var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+				this.y = this.ground - height;
+				this.jumpAnimation.change(this.jumpAnimation.spritesheets[7], 56, 80, 7, 0.2, 7, true, 1.5);
+			
+			}
+			 if (this.game.s) {
+				this.animation.change(this.animation.spritesheets[5], 67, 80, 3, 0.2, 3, true, 1.25);	// crouch left
+			} else if (this.game.walking) {
+				this.animation.change(this.animation.spritesheets[3], 48, 80, 4, 0.2, 4, true, 1.25);	// walking left
+			} else if (this.game.throw) {
+				this.animation.change(this.animation.spritesheets[9], 80, 80, 3, 0.2, 3, true, 1.5);	// throwing left
+			}else {
+				this.animation.change(this.animation.spritesheets[1], 48, 80, 9, 0.2, 9, true, 1.25);	// standing left
+			}
+		} 
+		
+		if (this.y < 565 && this.dir) {
+			this.animation.change(this.jumpAnimation.spritesheets[6],  56, 80, 7, 0.2, 7, true, 1.5)
+			this.y += 2; // After jump it drops.
+			
+		}
+		else if (this.y < 565 && !this.dir) {
+			this.animation.change(this.jumpAnimation.spritesheets[7],  56, 80, 7, 0.2, 7, true, 1.5)
+			this.y += 2; // After jump it drops.
+			
+		}
+		for (var i = 0; i < this.game.entities.length; i++) {
+			 var ent = this.game.entities[i];
+			 if (ent !== this && this.collision(ent) && (ent instanceof Goomba)) {
+				 console.log("COLLISION!");
+				 if(ent.y - 35 != this.y){
+				 isCollision = true;
+				 ent.x = -1000;
+				 ent.y = -1000;
+				 }
+				
+				 else{
+					 isDead = true;
+					 this.x = -1000;
+					 this.y = -1000;
+                   
+				 }
+			 }
+		 }
+		
+		Entity.prototype.update.call(this);
+		
+	} 
  }
 
 function Goomba(game, spritesheets) {
