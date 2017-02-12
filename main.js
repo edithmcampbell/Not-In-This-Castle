@@ -2,6 +2,7 @@ var AM = new AssetManager();
 var dir = true;
 var isCollision = false;
 var isDead = false;
+var isFalling = true;
 function Animation(spritesheets, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
     this.spritesheets = spritesheets;
     this.spritesheet = spritesheets[0];
@@ -124,7 +125,8 @@ function Princess(game, spritesheets) {
     this.dir = true;
     this.walking = false;
     this.jumpAnimation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, true, 1.25);
-    //this.jumping = false;
+    this.jumping = false;
+	this.isFalling = false;
 	this.ground = 565;
 	Entity.call(this, game, 300, 565, this.width, this.height);
 }
@@ -133,7 +135,7 @@ Princess.prototype.constructor = Princess;
 
 Princess.prototype.draw = function () {
    if(isDead === false){
-	   if (this.game.w ) { 
+	   if (this.game.w) { 
 			this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x + 17, this.y - 34);
 	  
 		}else {
@@ -177,11 +179,12 @@ Princess.prototype.update = function () {
 				var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
 				this.y = this.ground - height;
 				if (this.y + this.height > this.ground){
-					//this.jumping = false;
+					
 					this.animation.elapsedTime = 0;
 				}
-				//this.jumping = true;
+				
 				this.jumpAnimation.change(this.jumpAnimation.spritesheets[6],  56, 80, 7, 0.2, 7, true, 1.5);
+          
 			}
 			if (this.game.s) {
 				this.animation.change(this.animation.spritesheets[4], 67, 80, 3, 0.2, 3, true, 1.25); 	// crouch right
@@ -207,9 +210,11 @@ Princess.prototype.update = function () {
 			//var height = jumpDistance * 2 * totalHeight;
 				var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
 				this.y = this.ground - height;
+				//this.jumping = false;
 				this.jumpAnimation.change(this.jumpAnimation.spritesheets[7], 56, 80, 7, 0.2, 7, true, 1.5);
 			
 			}
+			
 			 if (this.game.s) {
 				this.animation.change(this.animation.spritesheets[5], 67, 80, 3, 0.2, 3, true, 1.25);	// crouch left
 			} else if (this.game.walking) {
@@ -222,15 +227,28 @@ Princess.prototype.update = function () {
 		} 
 		
 		if (this.y < 565 && this.dir) {
+			this.jumping = true;
 			this.animation.change(this.jumpAnimation.spritesheets[6],  56, 80, 7, 0.2, 7, true, 1.5)
 			this.y += 2; // After jump it drops.
-			
+			this.isFalling = true;
+			if(this.isFalling && this.game.w){
+				this.x = 300;
+				this.isFalling = false;
+			}
 		}
 		else if (this.y < 565 && !this.dir) {
+			this.jumping = true;
 			this.animation.change(this.jumpAnimation.spritesheets[7],  56, 80, 7, 0.2, 7, true, 1.5)
 			this.y += 2; // After jump it drops.
+			this.isFalling = true;
+			if(this.isFalling && this.game.w){
+				this.x = 300;
+				this.isFalling = false;
+			}
 			
-		}
+		}	
+		
+			
 		for (var i = 0; i < this.game.entities.length; i++) {
 			 var ent = this.game.entities[i];
 			 if (ent !== this && this.collision(ent) && (ent instanceof Goomba)) {
@@ -249,6 +267,7 @@ Princess.prototype.update = function () {
 				 }
 			 }
 		 }
+		 
 		
 		Entity.prototype.update.call(this);
 		
