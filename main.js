@@ -232,7 +232,6 @@ Princess.prototype.update = function () {
 			this.y += 2; // After jump it drops.
 			this.isFalling = true;
 			if(this.isFalling && this.game.w){
-				this.x = 300;
 				this.isFalling = false;
 			}
 		}
@@ -242,7 +241,6 @@ Princess.prototype.update = function () {
 			this.y += 2; // After jump it drops.
 			this.isFalling = true;
 			if(this.isFalling && this.game.w){
-				this.x = 300;
 				this.isFalling = false;
 			}
 			
