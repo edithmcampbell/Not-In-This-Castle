@@ -1,6 +1,6 @@
 var AM = new AssetManager();
 var dir = true;
-var isCollision = false;
+//var isCollision = false;
 var isDead = false;
 var isFalling = true;
 
@@ -139,7 +139,7 @@ Block.prototype.update = function () {
 
 function Princess(game, spritesheets) {
     this.animation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, true, 1.25);
-    this.x = 300;
+    this.x = 500;
     this.y = 565;
 	this.width = this.animation.frameWidth;
     this.height = this.animation.frameHeight;
@@ -152,7 +152,7 @@ function Princess(game, spritesheets) {
     this.jumping = false;
 	this.isFalling = false;
 	this.ground = 565;
-	Entity.call(this, game, 300, 565, this.width, this.height);
+	Entity.call(this, game,this.x, this.y, this.width, this.height);
 }
 Princess.prototype = new Entity();
 Princess.prototype.constructor = Princess;
@@ -170,7 +170,7 @@ Princess.prototype.draw = function () {
 }
 
 
-Princess.prototype.update = function () {
+Princess.prototype.update = function (gameEngine) {
 	if(isDead === false ){
 		if (this.game.d) {
 			this.dir = true;
@@ -276,7 +276,7 @@ Princess.prototype.update = function () {
 			 if (ent !== this && this.collision(ent) && (ent instanceof Goomba)) {
 				 console.log("COLLISION!");
 				 if(ent.y - 35 != this.y){
-				 isCollision = true;
+				 ent.removeFromWorld = true;
 				 ent.x = -1000;
 				 ent.y = -1000;
 				 }
@@ -285,7 +285,7 @@ Princess.prototype.update = function () {
 					 isDead = true;
 					 this.x = -1000;
 					 this.y = -1000;
-                     
+					 
 				 }
 			 }
 		 }
@@ -307,31 +307,32 @@ Princess.prototype.update = function () {
 	} 
  }
 
-function Goomba(game, spritesheets) {
+
+function Goomba(game, spritesheets,mul) {
     this.animation = new Animation(spritesheets, 60, 72, 5, .2, 5, true, 1);
-    this.x = 500;
+    this.x = 100 * mul;
     this.y = 600;
 	this.width = this.animation.frameWidth;
     this.height = this.animation.frameHeight;
-    this.speed = 100;
+    this.speed = 50;
     this.game = game;
     this.ctx = game.ctx;
     this.dir = true;
-	Entity.call(this, game, 500, 600, this.width, this.height);
+	Entity.call(this, game, this.x, this.y, this.width, this.height);
 	
 }
 Goomba.prototype = new Entity();
 Goomba.prototype.constructor = Goomba;
 
 Goomba.prototype.draw = function () {
-	if(isCollision === false){
+	if(!this.removeFromWorld){
         this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
 	    Entity.prototype.draw.call(this);
 	}
 }
 
 Goomba.prototype.update = function () {
-	if(isCollision === false){
+	if(!this.removeFromWorld){
 		if (this.x <= 0) {
 		this.dir = true;
 		}
@@ -444,7 +445,10 @@ AM.downloadAll(function () {
 	backgroundEnt = new Background(gameEngine, backgroundSprites);
 	princessEnt =  new Princess(gameEngine, princessSprites);
     gameEngine.addEntity(backgroundEnt);
-    gameEngine.addEntity(new Goomba(gameEngine, goombaSprites));
+	for(var i = 0; i < 3; i++){
+		gameEngine.addEntity(new Goomba(gameEngine, goombaSprites,i+1));
+	}
+    //gameEngine.addEntity(new Goomba(gameEngine, goombaSprites));
     gameEngine.addEntity(princessEnt);
     gameEngine.addEntity(new Fireball(gameEngine, fireballSprites));
 
