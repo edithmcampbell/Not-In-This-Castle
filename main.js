@@ -385,7 +385,7 @@ Fireball.prototype.update = function () {
 
 function Coin(game, spritesheets, backgroundEnt, mul) {
 	
-	this.animation = new Animation(spritesheets, 16, 18, 7, .2, 7, true, 2);
+	this.animation = new Animation(spritesheets, 32, 36, 7, .2, 7, true, 1);
     this.x = backgroundEnt.x + 150 * mul;
     this.y = 350;
 	this.width = this.animation.frameWidth;
