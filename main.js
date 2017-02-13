@@ -3,6 +3,7 @@ var dir = true;
 var isCollision = false;
 var isDead = false;
 var isFalling = true;
+
 function Animation(spritesheets, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
     this.spritesheets = spritesheets;
     this.spritesheet = spritesheets[0];
@@ -261,8 +262,19 @@ Princess.prototype.update = function () {
 					 isDead = true;
 					 this.x = -1000;
 					 this.y = -1000;
-                   
+                     
 				 }
+			 }
+		 }
+		 
+		 for (var i = 0; i < this.game.entities.length; i++) {
+			 var ent = this.game.entities[i];
+			 if (ent !== this && this.collision(ent) && (ent instanceof Coin)) {
+				 console.log("COLLISION!");
+				 ent.x = -1000;
+				 ent.y = -1000;
+				 ent.removeFromWorld = true;
+				 this.game.score++;
 			 }
 		 }
 		 
@@ -347,6 +359,35 @@ Fireball.prototype.update = function () {
 	Entity.prototype.update.call(this);
 }
 
+function Coin(game, spritesheets, backgroundEnt, mul) {
+	
+	this.animation = new Animation(spritesheets, 16, 18, 7, .2, 7, true, 2);
+    this.x = backgroundEnt.x + 150 * mul;
+    this.y = 350;
+	this.width = this.animation.frameWidth;
+    this.height = this.animation.frameHeight;
+    this.speed = 170;
+    this.game = game;
+    this.ctx = game.ctx;
+	
+    Entity.call(this, game, this.x,this.y, this.width, this.height);
+}
+Coin.prototype = new Entity();
+Coin.prototype.constructor = Coin;
+  
+Coin.prototype.draw = function () {
+	if(this.removeFromWorld != true)
+	{
+		this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+		Entity.prototype.draw.call(this);
+	}
+}
+
+Coin.prototype.update = function () {
+	
+	//Entity.prototype.update.call(this);
+}
+
 
 
 AM.queueDownload("./PeachWalkLeft.png");
@@ -362,7 +403,7 @@ AM.queueDownload("./PeachJumpLeft.png");
 AM.queueDownload("./Fireball.png");
 AM.queueDownload("./GoombaWalk.png");
 AM.queueDownload("./Level1.png");
-
+AM.queueDownload("./Coin.png");
 AM.downloadAll(function () {
     console.log("hello");
     var canvas = document.getElementById("gameWorld");
@@ -371,18 +412,26 @@ AM.downloadAll(function () {
     var gameEngine = new GameEngine();
     gameEngine.init(ctx);
     gameEngine.start();
-
+	
     backgroundSprites = [AM.getAsset("./Level1.png")];
     princessSprites = [AM.getAsset("./PeachIdleRight.png"), AM.getAsset("./PeachIdleLeft.png"), AM.getAsset("./PeachWalkRight.png"), AM.getAsset("./PeachWalkLeft.png"), AM.getAsset("./PeachCrouchRight.png"), AM.getAsset("./PeachCrouchLeft.png"), AM.getAsset("./PeachJumpRight.png"), AM.getAsset("./PeachJumpLeft.png"), AM.getAsset("./PeachThrowRight.png"), AM.getAsset("./PeachThrowLeft.png")];
     goombaSprites = [AM.getAsset("./GoombaWalk.png")];
     fireballSprites = [AM.getAsset("./Fireball.png")];
-
-    gameEngine.addEntity(new Background(gameEngine, backgroundSprites));
+    CoinSprites = [AM.getAsset("./Coin.png")];
+	backgroundEnt = new Background(gameEngine, backgroundSprites);
+	princessEnt =  new Princess(gameEngine, princessSprites);
+    gameEngine.addEntity(backgroundEnt);
     gameEngine.addEntity(new Goomba(gameEngine, goombaSprites));
-    gameEngine.addEntity(new Princess(gameEngine, princessSprites));
+    gameEngine.addEntity(princessEnt);
+    gameEngine.addEntity(new Fireball(gameEngine, fireballSprites));
 
-   gameEngine.addEntity(new Fireball(gameEngine, fireballSprites));
-
+	
+	for(var i = 0; i < 100; i++)
+	{
+		gameEngine.addEntity(new Coin(gameEngine,CoinSprites, backgroundEnt, i + 1));
+		
+	}
+	
     console.log("All Done!");
 });
 

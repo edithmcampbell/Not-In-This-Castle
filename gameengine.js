@@ -1,3 +1,4 @@
+
 window.requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -9,11 +10,20 @@ window.requestAnimFrame = (function () {
             };
 })();
 
+function scoreDisplay(game) {
+	game.ctx.font = "bold 14px Arial";
+	game.ctx.fillText("Score: " + game.score ,80, 20);
+}
+
+
 function GameEngine() {
     this.entities = [];
     this.ctx = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
+	this.score = null;
+	
+	
 }
 
 GameEngine.prototype.init = function (ctx) {
@@ -21,6 +31,7 @@ GameEngine.prototype.init = function (ctx) {
     this.surfaceWidth = this.ctx.canvas.width;
     this.surfaceHeight = this.ctx.canvas.height;
     this.timer = new Timer();
+	this.score = 0;
     this.startInput();
     console.log('game initialized');
 }
@@ -91,6 +102,9 @@ GameEngine.prototype.draw = function () {
     for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(this.ctx);
     }
+	
+	scoreDisplay(this);
+	
     this.ctx.restore();
 }
 
