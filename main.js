@@ -59,11 +59,34 @@ Animation.prototype.currentFrame = function () {
 Animation.prototype.isDone = function () {
     return (this.elapsedTime >= this.totalTime);
 }
+
+Entity.prototype.collisionY = function(other) {
+
+	if(this.y <= other.y){
+		if(this.y + this.height/2 < other.y - other.height/2) return false;
+		return true;
+	}
+	else{
+		if(this.y - this.height/2 > other.y + other.height/2) return false;
+		return true;
+	}
+}
 Entity.prototype.collision = function(other){
-	return (this.x < other.x + other.width
- 	&& this.x + this.width > other.x
+	
+	if(this.x <= other.x)
+	{
+		if(this.x + this.width/2 < other.x - other.width/2) return false;
+		return this.collisionY(other);
+	}
+	else {
+		if( this.x - this.width/2 > other.x + other.width/2) return false;
+		return this.collisionY(other);
+	}
+	/* 
+	return (this.x + this.width < other.x + other.width
+ 	&& this.x + this.width > other.x 
  	&& this.y < other.y + other.height
- 	&& this.height + this.y > other.y);
+ 	&& this.height + this.y > other.y); */
  }
 
 
