@@ -92,7 +92,7 @@ Entity.prototype.collision = function(other){
 
 // no inheritance
 function Background(game, spritesheets) {
-    this.animation = new Animation(spritesheets, 2000, 320, 2, 0.4, 2, true, 2.17);
+    this.animation = new Animation(spritesheets, 1200, 640, 1, 0.4, 1, true, 1);
     this.x = 0;
     this.y = 0;
 	this.width = 800;
