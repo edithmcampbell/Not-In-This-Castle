@@ -92,7 +92,7 @@ Entity.prototype.collision = function(other){
 
 // no inheritance
 function Background(game, spritesheets) {
-    this.spritesheet = spritesheets[0];
+    this.animation = new Animation(spritesheets, 2000, 320, 2, 0.4, 2, true, 2.17);
     this.x = 0;
     this.y = 0;
 	this.width = 800;
@@ -106,20 +106,19 @@ function Background(game, spritesheets) {
  Background.prototype.constructor = Background;
 
 Background.prototype.draw = function () {
-    this.ctx.drawImage(this.spritesheet, this.x, this.y);
-	Entity.prototype.draw.call(this);
+    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
 };
 
 Background.prototype.update = function () {
 };
 
-function Block(game, spriteshets) {
+function Block(game, spritesheets, x, y) {
     this.spritesheet = spritesheets[0];
-    this.x = 0;
-    this.y = 0;
+    this.x = x;
+    this.y = y;
     this.game = game;
     this.ctx = game.ctx;
-    Entity.call(this, game, 0, 0, 0, 0);
+    Entity.call(this, game, x, y, 0, 0);
 };
 
 
@@ -128,18 +127,36 @@ Block.prototype.constructor = Block;
 
 Block.prototype.draw = function () {
     this.ctx.drawImage(this.spritesheet, this.x, this.y);
-	Block.prototype = new Entity();
-    Block.prototype.constructor = Block;
 };
 
 Block.prototype.update = function () {
 	 Entity.prototype.update.call(this);
 };
 
+function Cam(game, background, princess) {
+    this.x = 350;
+    this.y = 0;
+    this.game = game;
+    this.ctx = game.ctx;
+    bg = background;
+    mc = princess
+}
+
+Cam.prototype.update = function () {
+    if(mc.x >= this.x && (mc.game.walking || mc.game.jump) && bg.x > bg.game.surfaceWidth - bg.animation.frameWidth * bg.animation.scale){
+        bg.x = bg.x - mc.speed * mc.game.clockTick;
+    } else if(mc.x < 0 && (mc.game.walking || mc.game.jump) && bg.x < 0){
+        bg.x = bg.x + mc.speed * mc.game.clockTick;
+    }
+};
+
+Cam.prototype.draw = function (){
+    
+};
 
 function Princess(game, spritesheets) {
     this.animation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, true, 1.25);
-    this.x = 500;
+    this.x = 2;
     this.y = 565;
 	this.width = this.animation.frameWidth;
     this.height = this.animation.frameHeight;
@@ -300,7 +317,23 @@ Princess.prototype.update = function (gameEngine) {
 				 this.game.score++;
 			 }
 		 }
-		 
+                
+		this.onBlock = false;
+                for (var i = 0; i < this.game.blocks.length; i++) {
+                    //console.log(this.x + " " + this.game.blocks[i].x)
+                    if (this.x + 24 >= this.game.blocks[i].x
+				&& this.x  <= this.game.blocks[i].x + 64
+				&& this.y >= this.game.blocks[i].y - 75
+				&& this.y < this.game.blocks[i].y + 24) {
+                        this.y = this.game.blocks[i].y - 75;
+                        this.onBlock = true;
+			console.log("BLOCK");
+                    }
+                }
+		if (!this.onBlock) {
+			console.log("FALL");
+			this.y += 2;
+		}
 		
 		Entity.prototype.update.call(this);
 		
@@ -428,6 +461,8 @@ AM.queueDownload("./Fireball.png");
 AM.queueDownload("./GoombaWalk.png");
 AM.queueDownload("./Level1.png");
 AM.queueDownload("./Coin.png");
+AM.queueDownload("./Block.png");
+
 AM.downloadAll(function () {
     console.log("hello");
     var canvas = document.getElementById("gameWorld");
@@ -442,22 +477,44 @@ AM.downloadAll(function () {
     goombaSprites = [AM.getAsset("./GoombaWalk.png")];
     fireballSprites = [AM.getAsset("./Fireball.png")];
     CoinSprites = [AM.getAsset("./Coin.png")];
-	backgroundEnt = new Background(gameEngine, backgroundSprites);
-	princessEnt =  new Princess(gameEngine, princessSprites);
+    blockSprites = [AM.getAsset("./Block.png")];
+
+    backgroundEnt = new Background(gameEngine, backgroundSprites);
+    princessEnt =  new Princess(gameEngine, princessSprites);
     gameEngine.addEntity(backgroundEnt);
-	for(var i = 0; i < 3; i++){
-		gameEngine.addEntity(new Goomba(gameEngine, goombaSprites,i+1));
-	}
+
+    blocks = []
+    var blk = new Block(gameEngine, blockSprites, 0, 640);
+    gameEngine.addEntity(blk);
+    blocks.push(blk);
+    blk = new Block(gameEngine, blockSprites, 64, 640);
+    gameEngine.addEntity(blk);
+    blocks.push(blk);
+    blk = new Block(gameEngine, blockSprites, 128, 640);
+    gameEngine.addEntity(blk);
+    blocks.push(blk);
+    blk = new Block(gameEngine, blockSprites, 192, 640);
+    gameEngine.addEntity(blk);
+    blocks.push(blk);
+    blk = new Block(gameEngine, blockSprites, 300, 550);
+    gameEngine.addEntity(blk);
+    blocks.push(blk);
+    blk = new Block(gameEngine, blockSprites, 364, 550);
+    gameEngine.addEntity(blk);
+    blocks.push(blk);
+
+    gameEngine.blocks = blocks;
+    for(var i = 0; i < 3; i++){
+        gameEngine.addEntity(new Goomba(gameEngine, goombaSprites,i+1));
+    }
     //gameEngine.addEntity(new Goomba(gameEngine, goombaSprites));
     gameEngine.addEntity(princessEnt);
     gameEngine.addEntity(new Fireball(gameEngine, fireballSprites));
 
-	
-	for(var i = 0; i < 100; i++)
-	{
-		gameEngine.addEntity(new Coin(gameEngine,CoinSprites, backgroundEnt, i + 1));
-		
-	}
+    gameEngine.addEntity(new Cam(gameEngine, gameEngine.entities[0], gameEngine.entities[2]));
+    for(var i = 0; i < 100; i++) {
+	gameEngine.addEntity(new Coin(gameEngine,CoinSprites, backgroundEnt, i + 1));
+    }
 	
     console.log("All Done!");
 });
