@@ -73,13 +73,13 @@ Entity.prototype.collisionY = function(other) {
 }
 Entity.prototype.collision = function(other){
 	
-	if(this.x <= other.x)
+	if(this.x <= other.abs)
 	{
-		if(this.x + this.width < other.x) return false;
+		if(this.x + this.width < other.abs) return false;
 		return this.collisionY(other);
 	}
 	else {
-		if( this.x > other.x + other.width) return false;
+		if( this.x > other.abs + other.width) return false;
 		return this.collisionY(other);
 	}
 	/* 
@@ -92,7 +92,7 @@ Entity.prototype.collision = function(other){
 
 // no inheritance
 function Background(game, spritesheets) {
-    this.animation = new Animation(spritesheets, 2000, 320, 1, 0.4, 1, true, 2.17);
+    this.animation = new Animation(spritesheets, 2000, 320, 1, 0.4, 1, true, 1);
     this.x = 0;
     this.y = 0;
     //this.width = 1200;
@@ -206,7 +206,7 @@ Princess.prototype.update = function (gameEngine) {
 		//}
 		
 		if(this.dir) {		// facing right
-			if (this.game.walking && (this.x < 350 || (bg.x <= bg.game.surfaceWidth - bg.animation.frameWidth * bg.animation.scale && this.x < this.game.surfaceWidth - this.animation.frameWidth))) {
+			if (this.game.walking && ((this.x < 350) || (bg.x <= bg.game.surfaceWidth - bg.animation.frameWidth * bg.animation.scale && this.x < this.game.surfaceWidth - this.animation.frameWidth))) {
 				this.x += this.game.clockTick * this.speed;
 			}
 			// moving/jumping to the right
@@ -231,7 +231,7 @@ Princess.prototype.update = function (gameEngine) {
 			}
 			if (this.game.s) {
 				this.animation.change(this.animation.spritesheets[4], 67, 80, 3, 0.2, 3, true, 1.25); 	// crouch right
-			} else if (this.game.walking) {
+			} else if (this.game.walking && ((this.x > 0) || (bg.x <= bg.game.surfaceWidth - bg.animation.frameWidth * bg.animation.scale && this.x < this.game.surfaceWidth))) {
 				this.animation.change(this.animation.spritesheets[2], 48, 80, 4, 0.2, 4, true, 1.25);	// walking right
 			} else if (this.game.throw) {	// throw right
 				this.animation.change(this.animation.spritesheets[8], 80, 80, 3, 0.2, 3, true, 1.5)
@@ -243,7 +243,7 @@ Princess.prototype.update = function (gameEngine) {
 				this.animation.change(this.animation.spritesheets[0], 48, 80, 9, 0.2, 9, true, 1.25);	// standing right
 			}
 		} else {			// facing left
-			if (this.game.walking) {
+			if (this.game.walking && this.x > 0) {
 			this.x -= this.game.clockTick * this.speed;		// walking/moving to the left
 			}
 			if (this.game.w) { // jumping left
@@ -300,6 +300,8 @@ Princess.prototype.update = function (gameEngine) {
 			
 		for (var i = 0; i < this.game.entities.length; i++) {
 			 var ent = this.game.entities[i];
+                         if (ent instanceof Goomba){
+                         console.log("Goomba " + i + ": " + ent.x)}
 			 if (ent !== this && this.collision(ent) && (ent instanceof Goomba)) {
 				 console.log("COLLISION!");
 				 if(ent.y - 35 != this.y){
@@ -356,6 +358,7 @@ function Goomba(game, spritesheets, background, mul) {
     this.bg = background;
     this.x = this.bg.x + 100 * mul;
     this.origin = this.x;
+    this.abs = this.x;
     this.y = 600;
     this.width = this.animation.frameWidth;
     this.height = this.animation.frameHeight;
@@ -384,9 +387,14 @@ Goomba.prototype.update = function () {
 		this.dir = false;
 		}
 		if (this.dir) {
+                        
 			this.x += this.game.clockTick * this.speed;
+                        currX = this.x;
+                        this.abs = currX + this.bg.x;
 		} else {
 			this.x -= (this.game.clockTick * this.speed);
+                        currX = this.x;
+                        this.abs = currX + this.bg.x;
 		}
     }
 }
@@ -528,4 +536,3 @@ AM.downloadAll(function () {
 	
     console.log("All Done!");
 });
-
