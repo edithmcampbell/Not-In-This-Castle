@@ -63,11 +63,11 @@ Animation.prototype.isDone = function () {
 Entity.prototype.collisionY = function(other) {
 
 	if(this.y <= other.y){
-		if(this.y + this.height/2 < other.y - other.height/2) return false;
+		if(this.y + this.height < other.y) return false;
 		return true;
 	}
 	else{
-		if(this.y - this.height/2 > other.y + other.height/2) return false;
+		if(this.y  > other.y + other.height) return false;
 		return true;
 	}
 }
@@ -75,11 +75,11 @@ Entity.prototype.collision = function(other){
 	
 	if(this.x <= other.x)
 	{
-		if(this.x + this.width/2 < other.x - other.width/2) return false;
+		if(this.x + this.width < other.x) return false;
 		return this.collisionY(other);
 	}
 	else {
-		if( this.x - this.width/2 > other.x + other.width/2) return false;
+		if( this.x > other.x + other.width) return false;
 		return this.collisionY(other);
 	}
 	/* 
@@ -92,7 +92,7 @@ Entity.prototype.collision = function(other){
 
 // no inheritance
 function Background(game, spritesheets) {
-    this.animation = new Animation(spritesheets, 4000, 640, 1, 0.4, 1, true, 1);
+    this.animation = new Animation(spritesheets, 2000, 320, 1, 0.4, 1, true, 2.17);
     this.x = 0;
     this.y = 0;
     //this.width = 1200;
@@ -409,11 +409,23 @@ function Fireball(game, spritesheets, princess, bg) {
     this.game.movingFireball = true;
 }
 
+Fireball.prototype = new Entity();
+Fireball.prototype.constructor = Fireball;
+
 Fireball.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
 };
 
 Fireball.prototype.update = function () {
+	for (var i = 0; i < this.game.entities.length; i++) {
+		var ent = this.game.entities[i];
+		if (ent !== this && this.collision(ent) && ent instanceof Goomba) {
+			console.log("HIT!");
+			console.log(this.x + " " + ent.x);
+			ent.removeFromWorld = true;
+			this.game.score++;
+		}
+	}
 	if(this.game.movingFireball){
             if(!this.dir){
 		this.x = this.x - this.game.clockTick * this.speed;
@@ -496,64 +508,12 @@ AM.downloadAll(function () {
     gameEngine.addEntity(backgroundEnt);
 
     blocks = []
-    var blk = new Block(gameEngine, blockSprites, backgroundEnt, 0, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 64, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 128, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 192, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 256, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 320, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 384, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 448, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 512, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 576, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 640, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 704, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 768, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 832, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 896, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 960, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 1024, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 1088, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-    blk = new Block(gameEngine, blockSprites, backgroundEnt, 1152, 640);
-    gameEngine.addEntity(blk);
-    blocks.push(blk);
-
+    for(var i = 0; i < 64; i++) {
+	var blk = new Block(gameEngine, blockSprites, backgroundEnt, i*64, 640);
+        gameEngine.addEntity(blk);
+	blocks.push(blk);
+    } 
+    
     gameEngine.blocks = blocks;
     for(var i = 0; i < 3; i++){
         gameEngine.addEntity(new Goomba(gameEngine, goombaSprites, backgroundEnt, i+1));
@@ -565,7 +525,6 @@ AM.downloadAll(function () {
     for(var i = 0; i < 100; i++) {
 	gameEngine.addEntity(new Coin(gameEngine,CoinSprites, backgroundEnt, i + 1));
     }
-    //gameEngine.addEntity(new Fireball(gameEngine, fireballSprites, princessEnt, backgroundEnt));
 	
     console.log("All Done!");
 });
