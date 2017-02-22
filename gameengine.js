@@ -1,3 +1,4 @@
+
 window.requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -9,11 +10,20 @@ window.requestAnimFrame = (function () {
             };
 })();
 
+function scoreDisplay(game) {
+	game.ctx.font = "bold 14px Arial";
+	game.ctx.fillText("Score: " + game.score ,80, 20);
+}
+
+
 function GameEngine() {
     this.entities = [];
     this.ctx = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
+	this.score = null;
+	
+	
 }
 
 GameEngine.prototype.init = function (ctx) {
@@ -21,6 +31,7 @@ GameEngine.prototype.init = function (ctx) {
     this.surfaceWidth = this.ctx.canvas.width;
     this.surfaceHeight = this.ctx.canvas.height;
     this.timer = new Timer();
+	this.score = 0;
     this.startInput();
     console.log('game initialized');
 }
@@ -43,10 +54,10 @@ GameEngine.prototype.startInput = function () {
     this.ctx.canvas.addEventListener("keydown", function (e) {
         console.log(e)
 	if (e.code === "KeyW") {
-            that.w = true;
+            that.w = true;                   //jumping
         }
         else if (e.code === "KeyS") {
-            that.s = true;
+            that.s = true;                  
         }
         else if (e.code === "KeyA") {
             that.a = true;
@@ -62,18 +73,20 @@ GameEngine.prototype.startInput = function () {
 		 else if (e.code === "KeyF") {
             that.movingFireball = true;
         }
+		
         console.log("Key down event - Char " + e.code + " Code " + e.keyCode);
     }, false);
 
 
     this.ctx.canvas.addEventListener("keyup", function (e) {
         console.log(e)
-	if (e.code === "KeyW") that.w = false;
+	if (e.code === "KeyW") that.w = false; 
         else if (e.code === "KeyS") that.s = false;
         else if (e.code === "KeyA") that.walking = false;
 	else if (e.code === "KeyD") that.walking = false;
         else if (e.code === "Space") that.throw = false;
 		else if (e.code === "KeyF") that.movingFireball = false;
+		
         console.log("Key up event - Char " + e.code + " Code " + e.keyCode);
     }, false);
 }
@@ -89,6 +102,9 @@ GameEngine.prototype.draw = function () {
     for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(this.ctx);
     }
+	
+	scoreDisplay(this);
+	
     this.ctx.restore();
 }
 
@@ -124,15 +140,18 @@ Timer.prototype.tick = function () {
     return gameDelta;
 }
 
-function Entity(game, x, y) {
+function Entity(game, x, y,width, height) {
     this.game = game;
     this.x = x;
     this.y = y;
+	this.width = width;
+    this.height = height;
     this.removeFromWorld = false;
 }
 
 Entity.prototype.update = function () {
 }
+
 
 Entity.prototype.draw = function (ctx) {
     if (this.game.showOutlines && this.radius) {
