@@ -1,4 +1,3 @@
-
 window.requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -11,17 +10,28 @@ window.requestAnimFrame = (function () {
 })();
 
 function scoreDisplay(game) {
-	game.ctx.font = "bold 14px Arial";
-	game.ctx.fillText("Score: " + game.score ,80, 20);
+	game.ctx.font = "28px myfont";
+	game.ctx.fillText("Score: " + game.score ,80, 30);
 }
 
+function gameOverDisplay(game) {
+	game.ctx.font = "bold 72px Arial";
+	game.ctx.fillText("GAME OVER", 200, 400);
+}
+
+function winDisplay(game) {
+	game.ctx.font = "bold 72px Arial";
+	game.ctx.fillText("YOU WIN!!!", 200, 400);
+}
 
 function GameEngine() {
     this.entities = [];
     this.ctx = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
-	this.score = null;
+    this.score = null;
+    this.gameOver = false;
+    this.win = false;
 	
 	
 }
@@ -80,7 +90,9 @@ GameEngine.prototype.startInput = function () {
 
     this.ctx.canvas.addEventListener("keyup", function (e) {
         console.log(e)
-	if (e.code === "KeyW") that.w = false; 
+	if (e.code === "KeyW") {
+		that.w = false; 
+        }
         else if (e.code === "KeyS") that.s = false;
         else if (e.code === "KeyA") that.walking = false;
 	else if (e.code === "KeyD") that.walking = false;
@@ -102,8 +114,12 @@ GameEngine.prototype.draw = function () {
     for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(this.ctx);
     }
-	
-	scoreDisplay(this);
+    scoreDisplay(this);
+    if (this.gameOver && !this.win) {
+        gameOverDisplay(this);
+    } else if (this.gameOver && this.win) {
+        winDisplay(this);
+    }
 	
     this.ctx.restore();
 }

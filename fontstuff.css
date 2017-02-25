@@ -1,0 +1,20 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 24, 2017, 1:06:44 PM
+    Author     : luschn
+    SRC        : http://stackoverflow.com/questions/15540591/preload-font-html5-js-kinetic-js/15973926#15973926
+*/
+@font-face {
+    font-family: 'myfont';
+    src: url('./YI_Chalkboard.eot');
+    src: url('./YI_Chalkboard.eot?#iefix') format('embedded-opentype'),
+         url('./YIChalkboard.woff') format('woff'),
+         url('./YI_Chalkboard.ttf') format('truetype'),
+         url('./YIChalkboard.svg#myfont') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
