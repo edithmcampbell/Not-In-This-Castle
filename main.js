@@ -419,13 +419,13 @@ Princess.prototype.update = function (gameEngine) {
  }
 
 
-function Goomba(game, spritesheets, background, mul) {
+function Goomba(game, spritesheets,background, mul,y) {
     this.animation = new Animation(spritesheets, 60, 72, 5, .2, 5, true, 1);
     this.bg = background;
-    this.x = this.bg.x + 100 * mul;
+    this.x = this.bg.x + 200 * mul;
     this.origin = this.x;
     this.abs = this.x;
-    this.y = 600;
+    this.y = y;
     this.width = this.animation.frameWidth;
     this.height = this.animation.frameHeight;
     this.speed = 50;
@@ -433,6 +433,10 @@ function Goomba(game, spritesheets, background, mul) {
     this.ctx = game.ctx;
     this.dir = true;
     this.isDead = false;
+	this.leftbound = 0;
+	this.rightbound = this.abs;
+
+	
 	
 }
 Goomba.prototype = new Entity();
@@ -447,10 +451,10 @@ Goomba.prototype.draw = function () {
 
 Goomba.prototype.update = function () {
 	if(!this.removeFromWorld){
-		if (this.x <= this.bg.x + 0) {
+		if (this.leftbound) {
 		this.dir = true;
 		}
-		if (this.x >= this.bg.x + 750 ) {
+		if (this.rightbound ) {
 		this.dir = false;
 		}
 		if (this.dir) {
@@ -469,9 +473,27 @@ Goomba.prototype.update = function () {
     } else {
         this.abs = this.x;
     }
-//    console.log(this.abs);
-}
+	
+	/**if( this.x < 0){
+		this.dir = true;
+		this.leftbound = this.abs;
+	    this.rightbound = 0;
+		
 
+	}**/
+
+    	
+//    console.log(this.abs);
+	//if(this.y !== 600){	
+		//for (var i = 0; i < this.game.blocks.length; i++) {
+			//if(this.y == this.game.blocks[i].y){
+		
+			//this.x = this.game.blocks[i].x;
+			//}
+		
+		//}
+	//}
+}
 //new code
 function Fireball(game, spritesheets, princess, bg) {
     this.animation = new Animation(spritesheets, 19, 22, 3, .2, 8, true, 2);
@@ -671,9 +693,25 @@ AM.downloadAll(function () {
 	blocks.push(blk);
     }
     gameEngine.blocks = blocks;
-    for(var i = 0; i < 3; i++){
-        gameEngine.addEntity(new Goomba(gameEngine, goombaSprites, backgroundEnt, i+1));
+    var m =  0;
+    for(var i = 0; i < 100; i++){
+        gameEngine.addEntity(new Goomba(gameEngine, goombaSprites, backgroundEnt, i+1+m,600));
+		m = m + 1
     }
+	var n = 0;
+	for(var i = 0; i < 100 ; i++){
+		
+        gameEngine.addEntity(new Goomba(gameEngine, goombaSprites,backgroundEnt, i + 4 + n*.5,600));
+		n++;
+    }
+	/**for(var i = 0; i < 100; i++){
+        gameEngine.addEntity(new Goomba(gameEngine, goombaSprites, backgroundEnt, i + (-7),600));
+    }**/
+	for(var i = 0; i < 20; i++){
+        gameEngine.addEntity(new Goomba(gameEngine, goombaSprites,backgroundEnt, i + 7,600));
+		
+    }
+	
     gameEngine.addEntity(princessEnt);
     //gameEngine.addEntity(new Fireball(gameEngine, fireballSprites));
 
