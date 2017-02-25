@@ -153,6 +153,25 @@ cutscene.prototype.draw = function () {
 };
 
 
+function endscreen(game, spritesheets, frames) {
+    this.animation = new Animation(spritesheets, 800, 700, frames, 0.2, frames, true, 1);
+    this.x = 0;
+    this.y = 0;
+    //this.width = 1200;
+    //this.height = 640;
+    this.game = game;
+    this.ctx = game.ctx;
+
+}
+
+ 
+ endscreen.prototype = new Entity();
+ endscreen.prototype.constructor = Background;
+
+endscreen.prototype.draw = function () {
+    this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
+};
+
 
 Background.prototype.update = function () {
 };
@@ -245,6 +264,7 @@ Princess.prototype.update = function (gameEngine) {
 		if (this.bg.x <= -3200 && this.x >= 700 && this.key) {
 		    this.game.gameOver = true;
                     this.game.win = true;
+                    this.game.addEntity(new endscreen(this.game, [AM.getAsset("./peachdance.png")], 22));
 		    console.log("WIN");
                 }
 		if (this.game.d) {
@@ -388,6 +408,7 @@ Princess.prototype.update = function (gameEngine) {
                                          dead.play();
 //					 this.game.clockTick.freeze();
  					 this.game.gameOver = true;
+                                         this.game.addEntity(new endscreen(this.game, [AM.getAsset("./peachcry.png")], 3));
 					 console.log("GAME OVER");
 				 }
 			 }
@@ -656,6 +677,8 @@ AM.queueDownload("./Coin.png");
 AM.queueDownload("./Block.png");
 AM.queueDownload("./Key.png");
 AM.queueDownload("./cutscene.png");
+AM.queueDownload("./peachcry.png");
+AM.queueDownload("./peachdance.png");
 
 AM.downloadAll(function () {
     console.log("hello");

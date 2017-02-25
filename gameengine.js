@@ -15,12 +15,17 @@ function scoreDisplay(game) {
 }
 
 function gameOverDisplay(game) {
-	game.ctx.font = "bold 72px Arial";
-	game.ctx.fillText("GAME OVER", 200, 400);
+	game.ctx.font = "bold 72px myfont";
+        txt = "GAME OVER";
+//        txt.fontcolor("white");
+//        game.ctx.fillStyle("#FFFFFF");
+        game.ctx.fillStyle = "white";
+	game.ctx.fillText(txt, 200, 400);
 }
 
 function winDisplay(game) {
-	game.ctx.font = "bold 72px Arial";
+	game.ctx.font = "bold 72px myfont";
+        game.ctx.fillStyle = "white";
 	game.ctx.fillText("YOU WIN!!!", 200, 400);
 }
 
