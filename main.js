@@ -208,7 +208,7 @@ Princess.prototype.draw = function () {
 		}else {
 			this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
 		}
-		Entity.prototype.draw.call(this);
+		//Entity.prototype.draw.call(this);
    }	
 }
 
@@ -447,7 +447,7 @@ Goomba.prototype.constructor = Goomba;
 Goomba.prototype.draw = function () {
 	if(!this.removeFromWorld){
         this.animation.drawFrame(this.game.clockTick, this.ctx, this.x+this.bg.x, this.y);
-	    Entity.prototype.draw.call(this);
+	    //Entity.prototype.draw.call(this);
 	}
 }
 
@@ -520,7 +520,7 @@ Fireball.prototype.constructor = Fireball;
 
 Fireball.prototype.draw = function () {
     this.animation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y);
-    Entity.prototype.draw.call(this);
+    //Entity.prototype.draw.call(this);
 };
 
 Fireball.prototype.update = function () {
@@ -576,7 +576,7 @@ Coin.prototype.draw = function () {
 	if(this.removeFromWorld != true)
 	{
 		this.animation.drawFrame(this.game.clockTick, this.ctx, this.x + this.bg.x, this.y);
-		Entity.prototype.draw.call(this);
+		//Entity.prototype.draw.call(this);
 	}
 }
 
@@ -603,7 +603,7 @@ Key.prototype.constructor = Key;
 Key.prototype.draw = function() {
     if(this.removeFromWorld != true) {
 		this.animation.drawFrame(this.game.clockTick, this.ctx, this.x + this.bg.x, this.y);
-		Entity.prototype.draw.call(this);
+		//Entity.prototype.draw.call(this);
 	}
 }
 Key.prototype.update = function() {
