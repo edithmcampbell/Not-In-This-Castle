@@ -11,17 +11,29 @@ window.requestAnimFrame = (function () {
 })();
 
 function scoreDisplay(game) {
-	game.ctx.font = "bold 14px Arial";
-	game.ctx.fillText("Score: " + game.score ,80, 20);
+	game.ctx.font = "bold 25px 	calibri";
+	game.ctx.fillStyle = 'purple';
+	game.ctx.fillText("SCORE: " + game.score ,80, 20);
 }
 
+function gameOverDisplay(game) {
+	game.ctx.font = "bold 72px Arial";
+	game.ctx.fillText("GAME OVER", 200, 400);
+}
+
+function winDisplay(game) {
+	game.ctx.font = "bold 72px Arial";
+	game.ctx.fillText("YOU WIN!!!", 200, 400);
+}
 
 function GameEngine() {
     this.entities = [];
     this.ctx = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
-	this.score = null;
+    this.score = null;
+    this.gameOver = false;
+    this.win = false;
 	
 	
 }
@@ -80,7 +92,9 @@ GameEngine.prototype.startInput = function () {
 
     this.ctx.canvas.addEventListener("keyup", function (e) {
         console.log(e)
-	if (e.code === "KeyW") that.w = false; 
+	if (e.code === "KeyW") {
+		that.w = false; 
+        }
         else if (e.code === "KeyS") that.s = false;
         else if (e.code === "KeyA") that.walking = false;
 	else if (e.code === "KeyD") that.walking = false;
@@ -102,8 +116,12 @@ GameEngine.prototype.draw = function () {
     for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(this.ctx);
     }
-	
-	scoreDisplay(this);
+    scoreDisplay(this);
+    if (this.gameOver && !this.win) {
+        gameOverDisplay(this);
+    } else if (this.gameOver && this.win) {
+        winDisplay(this);
+    }
 	
     this.ctx.restore();
 }
@@ -154,13 +172,15 @@ Entity.prototype.update = function () {
 
 
 Entity.prototype.draw = function (ctx) {
-    if (this.game.showOutlines && this.radius) {
+    
         this.game.ctx.beginPath();
         this.game.ctx.strokeStyle = "green";
-        this.game.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        this.game.ctx.lineWidth = 5;
+        this.game.ctx.rect(this.x, this.y, this.width, this.height);
+//        this.game.ctx.
         this.game.ctx.stroke();
         this.game.ctx.closePath();
-    }
+    
 }
 
 Entity.prototype.rotateAndCache = function (image, angle) {
