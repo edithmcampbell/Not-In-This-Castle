@@ -175,7 +175,7 @@ Cam.prototype.draw = function (){
     
 };
 
-function Princess(game, spritesheets, backgroundEnt) {
+function Princess(game, spritesheets) {
     this.animation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, true, 1.25);
     this.x = 2;
     this.y = 565;
@@ -189,19 +189,16 @@ function Princess(game, spritesheets, backgroundEnt) {
     this.walking = false;
     this.jumpAnimation = new Animation(spritesheets, 48, 80, 4, 0.2, 4, true, 1.25);
     this.jumping = false;
-    this.isFalling = false;
-    this.ground = 565;
-    this.isDead = false;
-    this.key = false;
-    this.bg = backgroundEnt;
-
+	this.isFalling = false;
+	this.ground = 565;
+	Entity.call(this, game,this.x, this.y, this.width, this.height);
+        this.isDead = false;
 }
 Princess.prototype = new Entity();
 Princess.prototype.constructor = Princess;
 
 Princess.prototype.draw = function () {
    if(isDead === false){
-
 	   if (this.game.w) { 
 			this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x + 17, this.y - 34);
 	  
@@ -215,11 +212,6 @@ Princess.prototype.draw = function () {
 
 Princess.prototype.update = function (gameEngine) {
 	if(isDead === false ){
-		if (this.bg.x <= -3200 && this.x >= 700 && this.key) {
-		    this.game.gameOver = true;
-                    this.game.win = true;
-		    console.log("WIN");
-                }
 		if (this.game.d) {
 			this.dir = true;
 		}
@@ -347,7 +339,6 @@ Princess.prototype.update = function (gameEngine) {
 				 ent.x = -1000;
                                  ent.abs = ent.x;
 				 ent.y = -1000;
-                                 this.game.score += 10;
                                  console.log(this.isDead);
 				 }
 				
@@ -358,10 +349,8 @@ Princess.prototype.update = function (gameEngine) {
                                          bgm.pause();
                                          bgm.currentTime = 0;
                                          var dead = new Audio("./death.mp3");
-                                         dead.play();
+                                 dead.play();
 //					 this.game.clockTick.freeze();
- 					 this.game.gameOver = true;
-					 console.log("GAME OVER");
 				 }
 			 }
 		 }
@@ -373,40 +362,26 @@ Princess.prototype.update = function (gameEngine) {
 				 ent.x = -1000;
 				 ent.y = -1000;
 				 ent.removeFromWorld = true;
-				 this.game.score += 5;
+				 this.game.score++;
                                  var coincollect = new Audio("./coin.wav");
                                  coincollect.play();
-			 } else if (ent !== this && this.collision(ent) && (ent instanceof Key) && !this.isDead) {
-			         ent.x = -1000;
-				 ent.y = -1000;
-			         ent.removeFromWorld = true;
-				 this.game.score += 100;
-				 this.key = true;
-				 console.log("KEY");
 			 }
 		 }
-                this.onBlock = false;
+                
+		this.onBlock = false;
                 for (var i = 0; i < this.game.blocks.length; i++) {
-                    var block = this.game.blocks[i];
                     //console.log(this.x + " " + this.game.blocks[i].x)
-                    if (this.x + 24 >= block.x
-				&& this.x <= block.x + 40) {
-                        if (this.y >= block.y && this.y <= block.y + 74) {
-                            this.y = block.y + 75;
-			    this.jumping = false;
-			    this.isFalling = true;
-                        } else if (this.y >= block.y - 90 && this.y <= block.y + 10) {
-                            this.y = block.y - 75;
-			    this.ground = block.y - 75;
-                            this.onBlock = true;
-                            this.isFalling = false;
-			    this.jumping = false;
-		
-//			    console.log("BLOCK");
-                        }
+                    if (this.x + 24 >= this.game.blocks[i].x
+				&& this.x  <= this.game.blocks[i].x + 64
+				&& this.y >= this.game.blocks[i].y - 75
+				&& this.y < this.game.blocks[i].y + 24) {
+                        this.y = this.game.blocks[i].y - 75;
+			this.ground = this.game.blocks[i].y - 75;
+                        this.onBlock = true;
+                        this.isFalling = false;
+//			console.log("BLOCK");
                     } 
                 }
-
 		if (!this.onBlock && !this.isDead) {
 			console.log("FALL");
 			this.y += 2;
@@ -509,7 +484,7 @@ Fireball.prototype.update = function () {
 			ent.removeFromWorld = true;
                         ent.abs = -1000;
                         ent.isDead = true;
-			this.game.score += 10;
+			this.game.score++;
                         this.movingFireball = false;
                         var gburn = new Audio("./firehitg.wav");
                                  gburn.play();
@@ -562,31 +537,6 @@ Coin.prototype.update = function () {
 	//Entity.prototype.update.call(this);
 }
 
-function Key(game, spritesheets, backgroundEnt, x, y) {
-    this.animation = new Animation(spritesheets, 50, 120, 8, .2, 8, true, .5);
-    this.x = backgroundEnt.x + x;
-    this.y = y;
-    this.game = game;
-    this.width = this.animation.frameWidth;
-    this.height = this.animation.frameHeight;
-    this.ctx = game.ctx;
-    this.speed = 170;
-    this.bg = backgroundEnt;
-    this.abs = this.x;
-}
-Key.prototype = new Entity();
-Key.prototype.constructor = Key;
-
-Key.prototype.draw = function() {
-    if(this.removeFromWorld != true) {
-		this.animation.drawFrame(this.game.clockTick, this.ctx, this.x + this.bg.x, this.y);
-		Entity.prototype.draw.call(this);
-	}
-}
-Key.prototype.update = function() {
-	this.abs = this.x + this.bg.x;
-}
-
 
 
 AM.queueDownload("./PeachWalkLeft.png");
@@ -604,7 +554,6 @@ AM.queueDownload("./GoombaWalk.png");
 AM.queueDownload("./Level1.png");
 AM.queueDownload("./Coin.png");
 AM.queueDownload("./Block.png");
-AM.queueDownload("./Key.png");
 
 AM.downloadAll(function () {
     console.log("hello");
@@ -622,11 +571,10 @@ AM.downloadAll(function () {
     fireballSprites = [AM.getAsset("./Fireball.png")];
     CoinSprites = [AM.getAsset("./Coin.png")];
     blockSprites = [AM.getAsset("./Block.png")];
-    keySprites = [AM.getAsset("./Key.png")];
-
+    
     bgm.play();
     backgroundEnt = new Background(gameEngine, backgroundSprites);
-    princessEnt =  new Princess(gameEngine, princessSprites, backgroundEnt);
+    princessEnt =  new Princess(gameEngine, princessSprites);
     gameEngine.addEntity(backgroundEnt);
 
     blocks = []
@@ -694,7 +642,7 @@ AM.downloadAll(function () {
     for (var i = 2375; i < 2550; i += 80) {
 	gameEngine.addEntity(new Coin(gameEngine, CoinSprites, backgroundEnt, i, 350));
     }
-    gameEngine.addEntity(new Key(gameEngine, keySprites, backgroundEnt, 3500, 350));
+    
 	gameEngine.showOutlines = true;
         
     console.log("All Done!");

@@ -21,7 +21,9 @@ function GameEngine() {
     this.ctx = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
-	this.score = null;
+    this.score = null;
+    this.gameOver = false;
+    this.win = false;
 	
 	
 }
@@ -80,7 +82,9 @@ GameEngine.prototype.startInput = function () {
 
     this.ctx.canvas.addEventListener("keyup", function (e) {
         console.log(e)
-	if (e.code === "KeyW") that.w = false; 
+	if (e.code === "KeyW") {
+		that.w = false; 
+        }
         else if (e.code === "KeyS") that.s = false;
         else if (e.code === "KeyA") that.walking = false;
 	else if (e.code === "KeyD") that.walking = false;
