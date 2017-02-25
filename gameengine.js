@@ -12,7 +12,7 @@ window.requestAnimFrame = (function () {
 function scoreDisplay(game) {
 	game.ctx.font = "bold 25px 	calibri";
 	game.ctx.fillStyle = 'purple';
-	game.ctx.fillText("SCORE: " + game.score ,80, 20);
+	game.ctx.fillText("SCORE: " + game.score ,50, 150);
 }
 
 function gameOverDisplay(game) {
