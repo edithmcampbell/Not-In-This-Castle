@@ -11,7 +11,7 @@ window.requestAnimFrame = (function () {
 
 function scoreDisplay(game) {
 	game.ctx.font = "28px myfont";
-	game.ctx.fillText("Score: " + game.score ,80, 30);
+	game.ctx.fillText("Score: " + game.score ,30, 70);
 }
 
 function gameOverDisplay(game) {
@@ -20,13 +20,13 @@ function gameOverDisplay(game) {
 //        txt.fontcolor("white");
 //        game.ctx.fillStyle("#FFFFFF");
         game.ctx.fillStyle = "white";
-	game.ctx.fillText(txt, 200, 400);
+	game.ctx.fillText(txt, (window.innerWidth - game.ctx.canvas.width*1.52), 400);//should display in precise middle of screen
 }
 
 function winDisplay(game) {
 	game.ctx.font = "bold 72px myfont";
         game.ctx.fillStyle = "white";
-	game.ctx.fillText("YOU WIN!!!", 200, 400);
+	game.ctx.fillText("YOU WIN!!!", (window.innerWidth - game.ctx.canvas.width*1.5), 400);
 }
 
 function GameEngine() {
