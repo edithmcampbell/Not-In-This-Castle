@@ -315,6 +315,10 @@ Princess.prototype.update = function (gameEngine) {
             this.game.gameOver = true;
             this.game.win = true;
             this.game.addEntity(new endscreen(this.game, [AM.getAsset("./peachdance.png")], 22));
+            bgm.pause();
+            bgm.currentTime = 0;
+            var win = new Audio("./win.wav");
+            win.play();
             console.log("WIN");
         }
         if (this.game.d) {
@@ -454,8 +458,8 @@ Princess.prototype.update = function (gameEngine) {
 //                    this.jumpAnimation.elapsedTime = 3;
         }
 
-        for (var i = 0; i < this.game.entities.length; i++) {
-            var ent = this.game.entities[i];
+        for (var i = 0; i < this.game.enemies.length; i++) {
+            var ent = this.game.enemies[i];
 //                         if (ent instanceof Goomba){
 //                         console.log("Goomba " + i + ": " + ent.x)}
             if (!(ent === this) && this.collision(ent) && (ent instanceof Goomba) && !this.isDead) {
@@ -486,8 +490,8 @@ Princess.prototype.update = function (gameEngine) {
             }
         }
 
-        for (var i = 0; i < this.game.entities.length; i++) {
-            var ent = this.game.entities[i];
+        for (var i = 0; i < this.game.coins.length; i++) {
+            var ent = this.game.coins[i];
             if (ent !== this && this.collision(ent) && (ent instanceof Coin) && !this.isDead) {
                 console.log("COLLISION!");
                 ent.x = -1000;
@@ -496,19 +500,20 @@ Princess.prototype.update = function (gameEngine) {
                 this.game.score += 5;
                 var coincollect = new Audio("./coin.wav");
                 coincollect.play();
-            } else if (ent !== this && this.collision(ent) && (ent instanceof Key) && !this.isDead) {
+            }
+        }
+        if (this.collision(this.game.keyEnt) && !this.isDead) {
+		var ent = this.game.keyEnt;
                 ent.x = -1000;
                 ent.y = -1000;
                 ent.removeFromWorld = true;
                 this.game.score += 100;
                 this.key = true;
-                var coincollect = new Audio("./coin.wav");
-                coincollect.play();
+                var keycollect = new Audio("./key.wav");
+                keycollect.play();
                 console.log("KEY");
-            }
         }
-
-
+      
         Entity.prototype.update.call(this);
 
     }
@@ -619,8 +624,8 @@ Fireball.prototype.draw = function () {
 };
 
 Fireball.prototype.update = function () {
-    for (var i = 0; i < this.game.entities.length; i++) {
-        var ent = this.game.entities[i];
+    for (var i = 0; i < this.game.enemies.length; i++) {
+        var ent = this.game.enemies[i];
         if (ent !== this && this.collision(ent) && (ent instanceof Goomba) && this.movingFireball && !(ent.isDead)) {
             console.log("HIT!");
             console.log(this.abs + " " + ent.abs);
@@ -792,16 +797,19 @@ AM.downloadAll(function () {
         blocks.push(blk);
     }
     gameEngine.blocks = blocks;
+    var enemies = [];
     for (var i = 0; i <= 5; i++) {
         var gmb = new Goomba(gameEngine, goombaSprites, backgroundEnt, i * 100 + 450, 600, 400, 1000);
         if (i % 2 === 0) {
             gmb.dir = false;
         }
         gameEngine.addEntity(gmb);
+	enemies.push(gmb);
     }
     for (var i = 0; i < 4; i++) {
         var gmb = new Goomba(gameEngine, goombaSprites, backgroundEnt, 1475 + i * 125, 335, 1475, 1950);
         gameEngine.addEntity(gmb);
+	enemies.push(gmb);
     }
     for (var i = 0; i <= 6; i++) {
         var gmb = new Goomba(gameEngine, goombaSprites, backgroundEnt, 2000 + i * 100, 600, 2000, 3000);
@@ -809,35 +817,58 @@ AM.downloadAll(function () {
             gmb.dir = false;
         }
         gameEngine.addEntity(gmb);
+        enemies.push(gmb);
     }
-    gameEngine.addEntity(new Goomba(gameEngine, goombaSprites, backgroundEnt, 2750, 335, 2700, 2800));
+    var gmb = new Goomba(gameEngine, goombaSprites, backgroundEnt, 2750, 335, 2700, 2800)
+    gameEngine.addEntity(gmb);
+    enemies.push(gmb);
+    gameEngine.enemies = enemies;
+
     gameEngine.addEntity(princessEnt);
     //gameEngine.addEntity(new Fireball(gameEngine, fireballSprites));
 
     gameEngine.addEntity(new Cam(gameEngine, backgroundEnt, princessEnt));
 
+    var coins = [];
     //for(var i = 50; i < 4000; i+=150) {
     //gameEngine.addEntity(new Coin(gameEngine,CoinSprites, backgroundEnt, i, 350));
     //}
     for (var i = 470; i <= 710; i += 80) {
-        gameEngine.addEntity(new Coin(gameEngine, CoinSprites, backgroundEnt, i, 375));
+	var cn = new Coin(gameEngine, CoinSprites, backgroundEnt, i, 375);
+        gameEngine.addEntity(cn);
+	coins.push(cn);
     }
     for (var i = 810; i < 900; i += 80) {
-        gameEngine.addEntity(new Coin(gameEngine, CoinSprites, backgroundEnt, i, 300));
+	var cn = new Coin(gameEngine, CoinSprites, backgroundEnt, i, 300);
+        gameEngine.addEntity(cn);
+	coins.push(cn);
     }
     for (var i = 1000; i < 1300; i += 80) {
-        gameEngine.addEntity(new Coin(gameEngine, CoinSprites, backgroundEnt, i, 225));
+	var cn = new Coin(gameEngine, CoinSprites, backgroundEnt, i, 225);
+        gameEngine.addEntity(cn);
+	coins.push(cn);
     }
     for (var i = 1600; i < 1900; i += 80) {
-        gameEngine.addEntity(new Coin(gameEngine, CoinSprites, backgroundEnt, i, 575));
+	var cn = new Coin(gameEngine, CoinSprites, backgroundEnt, i, 575);
+        gameEngine.addEntity(cn);
+	coins.push(cn);
     }
     for (var i = 2375; i < 2550; i += 80) {
-        gameEngine.addEntity(new Coin(gameEngine, CoinSprites, backgroundEnt, i, 350));
+	var cn = new Coin(gameEngine, CoinSprites, backgroundEnt, i, 350);
+        gameEngine.addEntity(cn);
+	coins.push(cn);
     }
     for (var i = 3000; i <= 3200; i += 80) {
-        gameEngine.addEntity(new Coin(gameEngine, CoinSprites, backgroundEnt, i, 225));
+	var cn = new Coin(gameEngine, CoinSprites, backgroundEnt, i, 225);
+        gameEngine.addEntity(cn);
+	coins.push(cn);
     }
-    gameEngine.addEntity(new Key(gameEngine, keySprites, backgroundEnt, 3500, 350));
+    gameEngine.coins = coins;
+
+    var keyEnt = new Key(gameEngine, keySprites, backgroundEnt, 3500, 350);
+    gameEngine.addEntity(keyEnt);
+    gameEngine.keyEnt = keyEnt;
+
     gameEngine.showOutlines = true;
 //        gameEngine.addEntity(new cutscene(gameEngine, cutsceneSprites));
     console.log("All Done!");
