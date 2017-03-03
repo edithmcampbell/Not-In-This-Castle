@@ -16,17 +16,19 @@ function scoreDisplay(game) {
 
 function gameOverDisplay(game) {
 	game.ctx.font = "bold 72px myfont";
-        txt = "GAME OVER";
+        txt = "GAME   OVER";
 //        txt.fontcolor("white");
 //        game.ctx.fillStyle("#FFFFFF");
         game.ctx.fillStyle = "white";
-	game.ctx.fillText(txt, (window.innerWidth - game.ctx.canvas.width*1.52), 400);//should display in precise middle of screen
+	game.ctx.fillText("GAME", 120, 400);//should display in precise middle of screen
+        game.ctx.fillText("OVER", 445, 400);
 }
 
 function winDisplay(game) {
 	game.ctx.font = "bold 72px myfont";
         game.ctx.fillStyle = "white";
-	game.ctx.fillText("YOU WIN!!!", (window.innerWidth - game.ctx.canvas.width*1.5), 400);
+	game.ctx.fillText("YOU", 190, 400);
+        game.ctx.fillText("WIN!", 445, 400);
 }
 
 function GameEngine() {
