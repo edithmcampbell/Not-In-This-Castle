@@ -29,6 +29,14 @@ function winDisplay(game) {
         game.ctx.fillStyle = "white";
 	game.ctx.fillText("YOU", 190, 400);
         game.ctx.fillText("WIN!", 445, 400);
+        setTimeout(function(){
+////                winscreen.visible = false;
+//                game.ctx.clearRect(0, 0, 700, 800);
+////                bgm.play();
+//                game.ctx.fillText("        ",190,400);
+                game.win = false;
+                game.gameOver = false;
+            }, 10000);
 }
 
 function GameEngine() {
@@ -113,13 +121,18 @@ GameEngine.prototype.startInput = function () {
 GameEngine.prototype.addEntity = function (entity) {
     console.log('added entity');
     this.entities.push(entity);
-}
+};
 
 GameEngine.prototype.draw = function () {
     this.ctx.clearRect(0, 0, this.surfaceWidth, this.surfaceHeight);
     this.ctx.save();
-    for (var i = 0; i < this.entities.length; i++) {
-        this.entities[i].draw(this.ctx);
+    for (var j = 1; j <= 5; j++) {
+        for (var i = 0; i < this.entities.length; i++) {
+//            console.log(this.entities[i].drawPriority);
+            if (!this.entities[i].removeFromWorld && this.entities[i].drawPriority === j) {
+                this.entities[i].draw(this.ctx);
+            }
+        }
     }
     scoreDisplay(this);
     if (this.gameOver && !this.win) {
@@ -129,7 +142,7 @@ GameEngine.prototype.draw = function () {
     }
 	
     this.ctx.restore();
-}
+};
 
 GameEngine.prototype.update = function () {
     var entitiesCount = this.entities.length;
@@ -167,9 +180,10 @@ function Entity(game, x, y,width, height) {
     this.game = game;
     this.x = x;
     this.y = y;
-	this.width = width;
+    this.width = width;
     this.height = height;
     this.removeFromWorld = false;
+    this.drawPriority = 1;
 }
 
 Entity.prototype.update = function () {
