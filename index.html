@@ -7,8 +7,20 @@
     <script type="text/javascript" src="./gameengine.js"></script>
     <script type="text/javascript" src="./assetmanager.js"></script>
     <script type="text/javascript" src="./main.js"></script>
+    <script language="javascript">
+        function mKeyF11(){
+    this.window.moveTo(0,0);
+this.window.resizeTo(screen.availWidth,screen.availHeight);
+console.log("" + screen.availWidth + " " + screen.availHeight);
+}
+    </script>
+    
+    <link rel="stylesheet" href="./fontstuff.css">
 </head>
-<body>
-    <canvas id="gameWorld" tabindex="1" width="800" height="700" style="border: 1px solid brown; background: lightskyblue" tabindex="1"></canvas>
+<body onload="mKeyF11();"
+      style="background-color: #333333">
+
+<div class="font-hack" style="font-family:'myfont'; font-size: 0.1px;">nothing to see here, move along</div>
+<canvas id="gameWorld" tabindex="1" width="800" height="700" style="border: 1px gray;background: gray;color: black;display: block;margin: 0 auto;"></canvas>
 </body>
 </html>

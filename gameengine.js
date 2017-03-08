@@ -1,4 +1,3 @@
-
 window.requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -11,11 +10,48 @@ window.requestAnimFrame = (function () {
 })();
 
 function scoreDisplay(game) {
-	game.ctx.font = "bold 25px 	calibri";
-	game.ctx.fillStyle = 'purple';
-	game.ctx.fillText("SCORE: " + game.score ,80, 20);
+	game.ctx.font = "28px myfont";
+	game.ctx.fillText("Score: " + game.score ,30, 70);
 }
 
+function gameOverDisplay(game) {
+	game.ctx.font = "bold 72px myfont";
+        txt = "GAME   OVER";
+//        txt.fontcolor("white");
+//        game.ctx.fillStyle("#FFFFFF");
+        game.ctx.fillStyle = "white";
+	game.ctx.fillText("GAME", 120, 400);//should display in precise middle of screen
+        game.ctx.fillText("OVER", 445, 400);
+}
+
+function winDisplay(game) {
+	game.ctx.font = "bold 72px myfont";
+        game.ctx.fillStyle = "white";
+	game.ctx.fillText("YOU", 190, 400);
+        game.ctx.fillText("WIN!", 445, 400);
+        setTimeout(function(){
+////                winscreen.visible = false;
+//                game.ctx.clearRect(0, 0, 700, 800);
+////                bgm.play();
+//                game.ctx.fillText("        ",190,400);
+                game.win = false;
+                game.gameOver = false;
+            }, 10000);
+}
+
+function levelClearDisplay(game) {
+	game.ctx.font = "bold 72px myfont";
+        game.ctx.fillStyle = "white";
+	game.ctx.fillText("LEVEL", 270, 250);
+        game.ctx.fillText("CLEARED!", 190, 400);
+        setTimeout(function(){
+////                winscreen.visible = false;
+//                game.ctx.clearRect(0, 0, 700, 800);
+////                bgm.play();
+//                game.ctx.fillText("        ",190,400);
+                game.win = false;
+            }, 10000);
+}
 
 function GameEngine() {
     this.entities = [];
@@ -99,19 +135,31 @@ GameEngine.prototype.startInput = function () {
 GameEngine.prototype.addEntity = function (entity) {
     console.log('added entity');
     this.entities.push(entity);
-}
+};
 
 GameEngine.prototype.draw = function () {
     this.ctx.clearRect(0, 0, this.surfaceWidth, this.surfaceHeight);
     this.ctx.save();
-    for (var i = 0; i < this.entities.length; i++) {
-        this.entities[i].draw(this.ctx);
+    for (var j = 1; j <= 5; j++) {
+        for (var i = 0; i < this.entities.length; i++) {
+//            console.log(this.entities[i].drawPriority);
+            if (!this.entities[i].removeFromWorld && this.entities[i].drawPriority === j) {
+                this.entities[i].draw(this.ctx);
+            }
+        }
+    }
+
+    scoreDisplay(this);
+    if (this.gameOver && !this.win) {
+        gameOverDisplay(this);
+    } else if (!this.gameOver && this.win) {
+	levelClearDisplay(this);
+    } else if (this.gameOver && this.win) {
+        winDisplay(this);
     }
 	
-	scoreDisplay(this);
-	
     this.ctx.restore();
-}
+};
 
 GameEngine.prototype.update = function () {
     var entitiesCount = this.entities.length;
@@ -149,9 +197,10 @@ function Entity(game, x, y,width, height) {
     this.game = game;
     this.x = x;
     this.y = y;
-	this.width = width;
+    this.width = width;
     this.height = height;
     this.removeFromWorld = false;
+    this.drawPriority = 1;
 }
 
 Entity.prototype.update = function () {
