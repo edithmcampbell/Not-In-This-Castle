@@ -850,6 +850,8 @@ Koopa.prototype.update = function () {
             	    ent.abs = -1000;
             	    ent.isDead = true;
             	    this.game.score += 10;
+		    var shell = new Audio("./shellhit.wav");
+                    shell.play();
 		} else if (ent !== this && (ent instanceof Block) && (this.collision(ent)) 
 			&& (this.y + 5 >= ent.y) && (this.y <= ent.y + 64)){
 		    console.log("koopa: " + this.abs + " block: " + ent.abs);
