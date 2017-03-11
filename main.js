@@ -698,9 +698,6 @@ Princess.prototype.update = function (gameEngine) {
                     (this.bg.level%2  > 0 &&((this.x < 350)||(bg.x <= bg.game.surfaceWidth - bg.animation.frameWidth * bg.animation.scale))))) {
                 this.x += this.game.clockTick * this.speed;
             }
-            if (this.game.walking && ((this.x < 350) || (bg.x <= bg.game.surfaceWidth - bg.animation.frameWidth * bg.animation.scale && this.x < this.game.surfaceWidth - this.animation.frameWidth))) {
-                this.x += this.game.clockTick * this.speed;
-            }
             // moving/jumping to the right
 //                        if(!this.jumping && !this.isFalling && this.game.w){
 //                                this.jumping = true;
@@ -749,12 +746,9 @@ Princess.prototype.update = function (gameEngine) {
 //			console.log("nope");
             }
         } else {			// facing left
-            if (this.game.walking && ((this.bg.level%2 <1 &&((this.x >= 350) || ((bg.x >= 0 && this.x > 0)))) || (this.bg.level%2>0 &&this.x > 0 ))){
-                this.x -= this.game.clockTick * this.speed;		// walking/moving to the left
-            }
-            if (this.game.walking && this.x > 0) {
-                this.x -= this.game.clockTick * this.speed;		// walking/moving to the left
-            }
+	    if (this.game.walking && ((this.bg.level%2 <1 &&((this.x >= 350) || ((bg.x >= 0 && this.x > 0)))) || (this.bg.level%2>0 &&this.x > 0 ))){
+               this.x -= this.game.clockTick * this.speed;	           }
+
 //            console.log(this.jumpPoint);
             if (this.game.w && (this.onBlock || this.jumping)) {
 //                                if (this.onBlock){
@@ -1221,6 +1215,7 @@ AM.queueDownload("./Fireball.png");
 AM.queueDownload("./GoombaWalk.png");
 AM.queueDownload("./Level1.png");
 AM.queueDownload("./Level2.png");
+AM.queueDownload("./Level3.png");
 AM.queueDownload("./Coin.png");
 AM.queueDownload("./Block.png");
 AM.queueDownload("./Key.png");
@@ -1247,7 +1242,7 @@ AM.downloadAll(function () {
     document.getElementById('gameWorld').focus();
     gameEngine.start();
 
-    backgroundSprites = [AM.getAsset("./Level1.png"), AM.getAsset("./Level2.png"), AM.getAsset("./Level2.png")];
+    backgroundSprites = [AM.getAsset("./Level1.png"), AM.getAsset("./Level2.png"), AM.getAsset("./Level3.png")];
     princessSprites = [AM.getAsset("./PeachIdleRight.png"), AM.getAsset("./PeachIdleLeft.png"), AM.getAsset("./PeachWalkRight.png"), AM.getAsset("./PeachWalkLeft.png"), AM.getAsset("./PeachCrouchRight.png"), AM.getAsset("./PeachCrouchLeft.png"), AM.getAsset("./PeachJumpRight.png"), AM.getAsset("./PeachJumpLeft.png"), AM.getAsset("./PeachThrowRight.png"), AM.getAsset("./PeachThrowLeft.png")];
     goombaSprites = [AM.getAsset("./GoombaWalk.png")];
     fireballSprites = [AM.getAsset("./Fireball.png")];
