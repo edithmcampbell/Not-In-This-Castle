@@ -251,7 +251,7 @@ Cam.prototype.update = function () {
     if(bg.level%2>0){
         if (mc.x >= this.x &&(mc.game.walking || mc.game.jump) && bg.x > bg.game.surfaceWidth - bg.animation.frameWidth * bg.animation.scale) {
             bg.x = bg.x - mc.speed * mc.game.clockTick;
-        } else if (mc.x > 0 && (mc.game.walking || mc.game.jump) && !mc.dir && bg.x < 0) {
+        } else if (mc.x <= 0 && (mc.game.walking || mc.game.jump) && !mc.dir && bg.x < 0) {
             bg.x = bg.x + mc.speed * mc.game.clockTick;
         }
     } else {
@@ -376,7 +376,7 @@ Princess.prototype.update = function (gameEngine) {
             this.bg.level = this.bg.level + 1;
             this.bg.animation.change(this.bg.spritesheets[(this.bg.level)-1], 2000, 320, 2, 0.2, 2, true, 2);
             var blocks = [];
-            var blockSprites = this.game.blocks[0].spritesheets;
+            var blockSprites = [AM.getAsset("./Block.png")];
             for (var i = 0; i < 64; i++) {
                 var blk = new Block(this.game, blockSprites, this.bg, i * 64, 640);
                 blocks.push(blk);
@@ -394,108 +394,94 @@ Princess.prototype.update = function (gameEngine) {
 		blocks.push(blk);
 	    }
 	    for (var i = 1000; i <= 1512; i+=64) {
-		var blk = new Block(this.game, blockSprites, this.bg, i, 500);
+		var blk = new Block(this.game, blockSprites, this.bg, i, 200);
 		blocks.push(blk);
 	    } 
             for (var i = 1600; i <= 1792; i+=64) {
-                var blk = new Block(this.game, blockSprites, this.bg, i, 300);
-                blocks.push(blk);
-            }
-            for (var i = 1900; i <= 2156; i+=64) {
                 var blk = new Block(this.game, blockSprites, this.bg, i, 450);
                 blocks.push(blk);
             }
-            for (var i = 2000; i <= 2128; i+=64) {
-                var blk = new Block(this.game, blockSprites, this.bg, i, 200);
+            for (var i = 1900; i <= 2156; i+=64) {
+                var blk = new Block(this.game, blockSprites, this.bg, i, 300);
                 blocks.push(blk);
             }
-            for (var i = 2300; i <= 2940; i+=64) {
-                var blk = new Block(this.game, blockSprites, this.bg, i, 576);
+            for (var i = 2200; i <= 2328; i+=64) {
+                var blk = new Block(this.game, blockSprites, this.bg, i, 175);
                 blocks.push(blk);
             }
-            for (var i = 2428; i <= 2812; i+=64) {
-                var blk = new Block(this.game, blockSprites, this.bg, i, 512);
-                blocks.push(blk);
-            }
-            for (var i = 2556; i <= 2684; i+=64) {
-                var blk = new Block(this.game, blockSprites, this.bg, i, 448);
-                blocks.push(blk);
-            }
+	    for (var i = 2500; i<= 2692; i+=64) {
+		var blk = new Block(this.game, blockSprites, this.bg, i, 350);
+		blocks.push(blk);
+	    }
             for (var i = 2850; i <= 3106; i+=64) {
                 var blk = new Block(this.game, blockSprites, this.bg, i, 275);
                 blocks.push(blk);
             }
-            for (var i = 3300; i <= 3492; i+=64) {
-                var blk = new Block(this.game, blockSprites, this.bg, i, 200);
-                blocks.push(blk);
-            }
+
             this.game.blocks = blocks;
             
             var enemies = [];
 	    var spikeSprites = [AM.getAsset("./Spike.png")];
-	    var koopaSprites = this.game.enemies[0].spritesheets;
-	    enemies.push(new Koopa(this.game, koopaSprites, this.bg, -1000, -1000, -2000, 0));
-            var goombaSprites = this.game.enemies[1].spritesheets;
+	    var koopaSprites = [AM.getAsset("./koopawalkright.png"), AM.getAsset("./koopawalkleft.png"), AM.getAsset("./koopafallright.png"), AM.getAsset("./koopafallleft.png"), AM.getAsset("./koopashellidleright.png"), AM.getAsset("./koopashellidleleft.png"), AM.getAsset("./koopaspinright.png"), AM.getAsset("./koopaspinleft.png")];
+	    
+            var goombaSprites = [AM.getAsset("./GoombaWalk.png")];
 	    var gmb = new Goomba(this.game, goombaSprites, this.bg, 850, 310, 800, 915);
-	    var spike = new Spike(this.game, spikeSprites, this.bg, 300, 500);
-	    enemies.push(spike);
 	    enemies.push(gmb);
+	    for (var i = 300; i <= 492; i+=64) {
+	    	var spike = new Spike(this.game, spikeSprites, this.bg, i, 595);
+	    	enemies.push(spike);
+	    }
+	    for (var i = 1000; i <= 1512; i+=64) {
+		var spike = new Spike(this.game, spikeSprites, this.bg, i, 595);
+		enemies.push(spike);
+	    } 
+	    
 	    for (var i = 0; i <= 3; i++) {
-		var koopa = new Koopa(this.game, koopaSprites, this.bg, 1050 + i*200, 435, 1000, 1551);
+		var koopa = new Koopa(this.game, koopaSprites, this.bg, 1050 + i*100, 135, 1000, 1520);
 		if (i%2) {
 		    koopa.dir = false;
 		}
 		enemies.push(koopa);
 	    }
-	    gmb = new Goomba(this.game, goombaSprites, this.bg, 1650, 260, 1600, 1780);
-	    enemies.push(gmb);
-	    gmb = new Goomba(this.game, goombaSprites, this.bg, 1750, 260, 1600, 1780);
-	    gmb.dir = false;
-	    enemies.push(gmb);
 	    var koopa = new Koopa(this.game, koopaSprites, this.bg, 1800, 575, 1600, 2200);
 	    enemies.push(koopa);
-	    koopa = new Koopa(this.game, koopaSprites, this.bg, 2000, 385, 1900, 2150);
+	    koopa = new Koopa(this.game, koopaSprites, this.bg, 2000, 235, 1900, 2156);
 	    enemies.push(koopa);
-            gmb = new Goomba(this.game, goombaSprites, this.bg, 3500, 600, 3000, 3600);
-            enemies.push(gmb);
+	    for (var i = 0; i <= 5; i++) {
+            	gmb = new Goomba(this.game, goombaSprites, this.bg, 3500 + i*100, 600, 3000, 3600);
+		if (i%2) {
+		    gmb.dir = false;
+		}
+            	enemies.push(gmb);
+	    }
             gmb = new Goomba(this.game, goombaSprites, this.bg, 3400, 160, 3300, 3480);
             enemies.push(gmb);
             this.game.enemies = enemies;
             
             var coins = [];
-            var coinSprites = this.game.coins[0].spritesheets;
+            var coinSprites = [AM.getAsset("./Coin.png")];
 	    for (var i = 300; i <= 556; i+=80) {
 		var cn = new Coin(this.game, coinSprites, this.bg, i, 335);
 		coins.push(cn);
 	    } 
-	    for(var i = 980; i <= 1540; i+=80) {
+	    for (var i = 1600; i< 1792; i+=80) {
+		var cn = new Coin(this.game, coinSprites, this.bg, i, 400);
+		coins.push(cn);
+	    }
+	    for (var i = 2000; i<= 2500; i+=80) {
 		var cn = new Coin(this.game, coinSprites, this.bg, i, 600);
 		coins.push(cn);
 	    }
-	    for (var i = 1600; i< 2300; i+=80) {
-		var cn = new Coin(this.game, coinSprites, this.bg, i, 575);
-		coins.push(cn);
-	    }
-            for (var i = 2300; i < 2428; i+= 80){
-                var cn = new Coin(this.game, coinSprites, this.bg, i, 525);
-                coins.push(cn);
-            }
-            for (var i = 2428; i < 2556; i+=80) {
-                var cn = new Coin(this.game, coinSprites, this.bg, i, 450);
-                coins.push(cn);
-            }
-            for (var i = 2556; i < 2800; i+=80) {
-                var cn = new Coin(this.game, coinSprites, this.bg, i, 400);
-                coins.push(cn);
-            }
-	    var keySprites = this.game.keyEnt.spritesheets;
-            var keyEnt = new Key(this.game, keySprites, backgroundEnt, 2075, 100);
-    	    this.game.keyEnt = keyEnt;
             for (var i = 2860; i < 3106; i+=80) {
                 var cn = new Coin(this.game, coinSprites, this.bg, i, 225);
                 coins.push(cn);
             }
             this.game.coins = coins;
+
+	    var keySprites = this.game.keyEnt.spritesheets;
+            var keyEnt = new Key(this.game, keySprites, backgroundEnt, 2275, 75);
+    	    this.game.keyEnt = keyEnt;
+
             
             for (var i = 0; i < this.game.entities.length; i++) {
                 var ent = this.game.entities[i];
@@ -538,7 +524,7 @@ Princess.prototype.update = function (gameEngine) {
             this.bg.animation.change(this.bg.spritesheets[(this.bg.level)-1], 2000, 320, 2, 0.2, 2, true, 2);
             
             var blocks = [];
-            var blockSprites = this.game.blocks[0].spritesheets;
+            var blockSprites = [AM.getAsset("./Block.png")];
             for (var i = 0; i < 64; i++) {
                 var blk = new Block(this.game, blockSprites, this.bg, i * 64, 640);
                 blocks.push(blk);
@@ -594,9 +580,9 @@ Princess.prototype.update = function (gameEngine) {
             this.game.blocks = blocks;
             
             var enemies = [];
-	    var koopaSprites = this.game.enemies[0].spritesheets;
-            var goombaSprites = this.game.enemies[1].spritesheets;
-	    enemies.push(new Koopa(this.game, koopaSprites, this.bg, -1000, -1000, -2000, 0));
+	    var koopaSprites = [AM.getAsset("./koopawalkright.png"), AM.getAsset("./koopawalkleft.png"), AM.getAsset("./koopafallright.png"), AM.getAsset("./koopafallleft.png"), AM.getAsset("./koopashellidleright.png"), AM.getAsset("./koopashellidleleft.png"), AM.getAsset("./koopaspinright.png"), AM.getAsset("./koopaspinleft.png")];
+            var goombaSprites = [AM.getAsset("./GoombaWalk.png")];
+
 	    var gmb = new Goomba(this.game, goombaSprites, this.bg, 850, 310, 800, 915);
 	    enemies.push(gmb);
 	    for (var i = 0; i <= 5; i++) {
@@ -622,7 +608,7 @@ Princess.prototype.update = function (gameEngine) {
             this.game.enemies = enemies;
             
             var coins = [];
-            var coinSprites = this.game.coins[0].spritesheets;
+            var coinSprites = [AM.getAsset("./Coin.png")];
 	    for (var i = 500; i <= 756; i+=80) {
 		var cn = new Coin(this.game, coinSprites, this.bg, i, 135);
 		coins.push(cn);
