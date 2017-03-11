@@ -922,6 +922,16 @@ Princess.prototype.update = function (gameEngine) {
 
     }
     this.abs = this.x;
+	this.abs = this.x;
+	if(this.bg.level == 1){
+		this.game.levelScore = 1;
+	}
+	else if(this.bg.level == 2){
+		this.game.levelScore = 2;
+	}
+	else if(this.bg.level == 3){
+		this.game.levelScore = 3;
+	}
 }
 
 

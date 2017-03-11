@@ -13,6 +13,10 @@ function scoreDisplay(game) {
 	game.ctx.font = "28px myfont";
 	game.ctx.fillText("Score: " + game.score ,30, 70);
 }
+function levelDisplay(game) {
+	game.ctx.font = "28px myfont";
+	game.ctx.fillText("LEVEL: " + game.levelScore ,600, 70);
+}
 
 function gameOverDisplay(game) {
 	game.ctx.font = "bold 72px myfont";
@@ -61,7 +65,7 @@ function GameEngine() {
     this.score = null;
     this.gameOver = false;
     this.win = false;
-	
+	this.levelScore = null;
 	
 }
 
@@ -148,7 +152,7 @@ GameEngine.prototype.draw = function () {
             }
         }
     }
-
+    levelDisplay(this);
     scoreDisplay(this);
     if (this.gameOver && !this.win) {
         gameOverDisplay(this);
